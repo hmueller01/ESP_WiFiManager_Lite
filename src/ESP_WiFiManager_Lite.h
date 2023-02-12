@@ -1434,10 +1434,15 @@ class ESP_WiFiManager_Lite
 
     void displayConfigData(const ESP_WM_LITE_Configuration& configData)
     {
-      ESP_WML_LOGERROR5(F("Hdr="),   configData.header, F(",SSID="), configData.WiFi_Creds[0].wifi_ssid,
-                        F(",PW="),   configData.WiFi_Creds[0].wifi_pw);
-      ESP_WML_LOGERROR3(F("SSID1="), configData.WiFi_Creds[1].wifi_ssid, F(",PW1="),  configData.WiFi_Creds[1].wifi_pw);
+      ESP_WML_LOGERROR1(F("Hdr="), configData.header);
+      ESP_WML_LOGERROR3(F("SSID0="), configData.WiFi_Creds[0].wifi_ssid, F(",PW0="), configData.WiFi_Creds[0].wifi_pw);
+      ESP_WML_LOGERROR3(F("SSID1="), configData.WiFi_Creds[1].wifi_ssid, F(",PW1="), configData.WiFi_Creds[1].wifi_pw);
+
+#if USING_BOARD_NAME
+
       ESP_WML_LOGERROR1(F("BName="), configData.board_name);
+
+#endif
 
 #if USE_DYNAMIC_PARAMETERS
 
@@ -2140,10 +2145,6 @@ class ESP_WiFiManager_Lite
       {
         // If SSID, PW ="blank" or NULL, stay in config mode forever until having config Data.
         return false;
-      }
-      else
-      {
-        displayConfigData(ESP_WM_LITE_config);
       }
 
       return true;
