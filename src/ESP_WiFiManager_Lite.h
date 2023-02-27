@@ -2664,6 +2664,7 @@ class ESP_WiFiManager_Lite
     void createHTML(String& root_html_template)
     {
       String pitem;
+      pitem.reserve(600);
 
       root_html_template = FPSTR(ESP_WM_LITE_HTML_HEAD_START);
 
@@ -2805,6 +2806,7 @@ class ESP_WiFiManager_Lite
           //////
 
           String result;
+          result.reserve(3072);
           createHTML(result);
 
           //ESP_WML_LOGDEBUG1(F("h:Repl:"), result);
