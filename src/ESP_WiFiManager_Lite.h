@@ -2708,7 +2708,7 @@ class ESP_WiFiManager_Lite
       if (ListOfSSIDs == "")    // No SSID found or none was good enough
         ListOfSSIDs = String(FPSTR(ESP_WM_LITE_OPTION_START)) + String(FPSTR(ESP_WM_LITE_NO_NETWORKS_FOUND)) + String(FPSTR(ESP_WM_LITE_OPTION_END));
 
-      pitem = String(FPSTR(ESP_WM_LITE_HTML_HEAD_END));
+      pitem = FPSTR(ESP_WM_LITE_HTML_HEAD_END);
 
 #if MANUAL_SSID_INPUT_ALLOWED
       pitem.replace("[[input_id]]",  "<input id='id' list='SSIDs'>"  + String(FPSTR(ESP_WM_LITE_DATALIST_START)) + "'SSIDs'>" +
@@ -2726,7 +2726,7 @@ class ESP_WiFiManager_Lite
 
 #else
 
-      pitem = String(FPSTR(ESP_WM_LITE_HTML_HEAD_END));
+      pitem = FPSTR(ESP_WM_LITE_HTML_HEAD_END);
       pitem.replace("[[input_id]]",  FPSTR(ESP_WM_LITE_HTML_INPUT_ID));
       pitem.replace("[[input_id1]]", FPSTR(ESP_WM_LITE_HTML_INPUT_ID1));
       root_html_template += pitem + FPSTR(ESP_WM_LITE_FLDSET_START);
@@ -2737,7 +2737,7 @@ class ESP_WiFiManager_Lite
 
       for (uint16_t i = 0; i < NUM_MENU_ITEMS; i++)
       {
-        pitem = String(FPSTR(ESP_WM_LITE_HTML_PARAM));
+        pitem = FPSTR(ESP_WM_LITE_HTML_PARAM);
 
         pitem.replace("{b}", myMenuItems[i].displayName);
         pitem.replace("{v}", myMenuItems[i].id);
@@ -2754,7 +2754,7 @@ class ESP_WiFiManager_Lite
 
       for (uint16_t i = 0; i < NUM_MENU_ITEMS; i++)
       {
-        pitem = String(FPSTR(ESP_WM_LITE_HTML_SCRIPT_ITEM));
+        pitem = FPSTR(ESP_WM_LITE_HTML_SCRIPT_ITEM);
 
         pitem.replace("{d}", myMenuItems[i].id);
 
