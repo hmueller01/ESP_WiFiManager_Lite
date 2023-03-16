@@ -36,10 +36,10 @@
 #endif
 
 // Change _ESP_WM_LITE_LOGLEVEL_ to set tracing and logging verbosity
-// 0: DISABLED: no logging
+// 0: DISABLED: no logging (default)
 // 1: ERROR: errors
 // 2: WARN: errors and warnings
-// 3: INFO: errors, warnings and informational (default)
+// 3: INFO: errors, warnings and informational
 // 4: DEBUG: errors, warnings, informational and debug
 
 #ifndef _ESP_WM_LITE_LOGLEVEL_
