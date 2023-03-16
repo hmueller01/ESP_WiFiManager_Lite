@@ -36,10 +36,10 @@
 #endif
 
 // Change _ESP_WM_LITE_LOGLEVEL_ to set tracing and logging verbosity
-// 0: DISABLED: no logging
+// 0: DISABLED: no logging (default)
 // 1: ERROR: errors
 // 2: WARN: errors and warnings
-// 3: INFO: errors, warnings and informational (default)
+// 3: INFO: errors, warnings and informational
 // 4: DEBUG: errors, warnings, informational and debug
 
 #ifndef _ESP_WM_LITE_LOGLEVEL_
@@ -77,8 +77,8 @@ const char ESP_WML_MARK[] = "[WML] ";
 #define ESP_WML_LOGINFO0(x)     if(_ESP_WM_LITE_LOGLEVEL_>2) { ESP_WML_PRINT(x); }
 #define ESP_WML_LOGINFO(x)      if(_ESP_WM_LITE_LOGLEVEL_>2) { ESP_WML_PRINT_MARK; ESP_WML_PRINTLN(x); }
 #define ESP_WML_LOGINFO1(x,y)   if(_ESP_WM_LITE_LOGLEVEL_>2) { ESP_WML_PRINT_MARK; ESP_WML_PRINT(x); ESP_WML_PRINTLN(y); }
-#define ESP_WML_LOGINFO2(x,y,z) if(_ESP_WM_LITE_LOGLEVEL_>3) { ESP_WML_PRINT_MARK; ESP_WML_PRINT(x); ESP_WML_PRINT(y); ESP_WML_PRINTLN(z); }
-#define ESP_WML_LOGINFO3(x,y,z,w) if(_ESP_WM_LITE_LOGLEVEL_>3) { ESP_WML_PRINT_MARK; ESP_WML_PRINT(x); ESP_WML_PRINT(y); ESP_WML_PRINT(z); ESP_WML_PRINTLN(w); }
+#define ESP_WML_LOGINFO2(x,y,z) if(_ESP_WM_LITE_LOGLEVEL_>2) { ESP_WML_PRINT_MARK; ESP_WML_PRINT(x); ESP_WML_PRINT(y); ESP_WML_PRINTLN(z); }
+#define ESP_WML_LOGINFO3(x,y,z,w) if(_ESP_WM_LITE_LOGLEVEL_>2) { ESP_WML_PRINT_MARK; ESP_WML_PRINT(x); ESP_WML_PRINT(y); ESP_WML_PRINT(z); ESP_WML_PRINTLN(w); }
 #define ESP_WML_LOGINFO5(x,y,z,w,xx,yy) if(_ESP_WM_LITE_LOGLEVEL_>2) { ESP_WML_PRINT_MARK; ESP_WML_PRINT(x); ESP_WML_PRINT(y); ESP_WML_PRINT(z); ESP_WML_PRINT(w); ESP_WML_PRINT(xx); ESP_WML_PRINTLN(yy); }
 
 ///////////////////////////////////////////

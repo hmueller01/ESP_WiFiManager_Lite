@@ -1470,10 +1470,15 @@ class ESP_WiFiManager_Lite
 
     void displayConfigData(const ESP_WM_LITE_Configuration& configData)
     {
-      ESP_WML_LOGERROR5(F("Hdr="),   configData.header, F(",SSID="), configData.WiFi_Creds[0].wifi_ssid,
-                        F(",PW="),   configData.WiFi_Creds[0].wifi_pw);
-      ESP_WML_LOGERROR3(F("SSID1="), configData.WiFi_Creds[1].wifi_ssid, F(",PW1="),  configData.WiFi_Creds[1].wifi_pw);
+      ESP_WML_LOGERROR1(F("Hdr="), configData.header);
+      ESP_WML_LOGERROR3(F("SSID0="), configData.WiFi_Creds[0].wifi_ssid, F(",PW0="), configData.WiFi_Creds[0].wifi_pw);
+      ESP_WML_LOGERROR3(F("SSID1="), configData.WiFi_Creds[1].wifi_ssid, F(",PW1="), configData.WiFi_Creds[1].wifi_pw);
+
+#if USING_BOARD_NAME
+
       ESP_WML_LOGERROR1(F("BName="), configData.board_name);
+
+#endif
 
 #if USE_DYNAMIC_PARAMETERS
 
@@ -2174,10 +2179,6 @@ class ESP_WiFiManager_Lite
         // If SSID, PW ="blank" or NULL, stay in config mode forever until having config Data.
         return false;
       }
-      else
-      {
-        displayConfigData(ESP_WM_LITE_config);
-      }
 
       return true;
     }
@@ -2663,6 +2664,7 @@ class ESP_WiFiManager_Lite
     void createHTML(String& root_html_template)
     {
       String pitem;
+      pitem.reserve(600);
 
       root_html_template = FPSTR(ESP_WM_LITE_HTML_HEAD_START);
 
@@ -2706,7 +2708,7 @@ class ESP_WiFiManager_Lite
       if (ListOfSSIDs == "")    // No SSID found or none was good enough
         ListOfSSIDs = String(FPSTR(ESP_WM_LITE_OPTION_START)) + String(FPSTR(ESP_WM_LITE_NO_NETWORKS_FOUND)) + String(FPSTR(ESP_WM_LITE_OPTION_END));
 
-      pitem = String(FPSTR(ESP_WM_LITE_HTML_HEAD_END));
+      pitem = FPSTR(ESP_WM_LITE_HTML_HEAD_END);
 
 #if MANUAL_SSID_INPUT_ALLOWED
       pitem.replace("[[input_id]]",  "<input id='id' list='SSIDs'>"  + String(FPSTR(ESP_WM_LITE_DATALIST_START)) + "'SSIDs'>" +
@@ -2724,7 +2726,7 @@ class ESP_WiFiManager_Lite
 
 #else
 
-      pitem = String(FPSTR(ESP_WM_LITE_HTML_HEAD_END));
+      pitem = FPSTR(ESP_WM_LITE_HTML_HEAD_END);
       pitem.replace("[[input_id]]",  FPSTR(ESP_WM_LITE_HTML_INPUT_ID));
       pitem.replace("[[input_id1]]", FPSTR(ESP_WM_LITE_HTML_INPUT_ID1));
       root_html_template += pitem + FPSTR(ESP_WM_LITE_FLDSET_START);
@@ -2735,7 +2737,7 @@ class ESP_WiFiManager_Lite
 
       for (uint16_t i = 0; i < NUM_MENU_ITEMS; i++)
       {
-        pitem = String(FPSTR(ESP_WM_LITE_HTML_PARAM));
+        pitem = FPSTR(ESP_WM_LITE_HTML_PARAM);
 
         pitem.replace("{b}", myMenuItems[i].displayName);
         pitem.replace("{v}", myMenuItems[i].id);
@@ -2752,7 +2754,7 @@ class ESP_WiFiManager_Lite
 
       for (uint16_t i = 0; i < NUM_MENU_ITEMS; i++)
       {
-        pitem = String(FPSTR(ESP_WM_LITE_HTML_SCRIPT_ITEM));
+        pitem = FPSTR(ESP_WM_LITE_HTML_SCRIPT_ITEM);
 
         pitem.replace("{d}", myMenuItems[i].id);
 
@@ -2804,6 +2806,7 @@ class ESP_WiFiManager_Lite
           //////
 
           String result;
+          result.reserve(3072);
           createHTML(result);
 
           //ESP_WML_LOGDEBUG1(F("h:Repl:"), result);
