@@ -340,7 +340,6 @@ uint32_t getChipOUI();
 
 ///////////////////////////////////////////
 
-//NEW
 #define MAX_ID_LEN                5
 #define MAX_DISPLAY_NAME_LEN      16
 
@@ -479,8 +478,6 @@ const char ESP_WM_LITE_HTML_END[]          PROGMEM = "</html>";
 #endif
 
 //////////////////////////////////////////
-
-//KH Add repeatedly used const
 
 const char WM_HTTP_HEAD_CL[]         PROGMEM = "Content-Length";
 const char WM_HTTP_HEAD_TEXT_HTML[]  PROGMEM = "text/html";
@@ -1024,12 +1021,10 @@ class ESP_WiFiManager_Lite
         WiFi.hostname(RFC952_hostname);
 #else
 
-
         // Check cores/esp32/esp_arduino_version.h and cores/esp32/core_version.h
 #if ( defined(ESP_ARDUINO_VERSION_MAJOR) && (ESP_ARDUINO_VERSION_MAJOR >= 2) )
         WiFi.setHostname(RFC952_hostname);
 #else
-
         // Still have bug in ESP32_S2 for old core. If using WiFi.setHostname() => WiFi.localIP() always = 255.255.255.255
         if ( String(ARDUINO_BOARD) != "ESP32S2_DEV" )
         {
@@ -1037,8 +1032,8 @@ class ESP_WiFiManager_Lite
           WiFi.config(INADDR_NONE, INADDR_NONE, INADDR_NONE);
           WiFi.setHostname(RFC952_hostname);
         }
-
 #endif
+
 #endif
       }
     }
@@ -1915,24 +1910,7 @@ class ESP_WiFiManager_Lite
         ESP_WML_LOGINFO(F("failed"));
       }
     }
-#endif
-
-    //////////////////////////////////////////////
-
-    void NULLTerminateConfig()
-    {
-      //#define HEADER_MAX_LEN      16
-      //#define SERVER_MAX_LEN      32
-      //#define TOKEN_MAX_LEN       36
-
-      // NULL Terminating to be sure
-      ESP_WM_LITE_config.header[HEADER_MAX_LEN - 1] = 0;
-      ESP_WM_LITE_config.WiFi_Creds[0].wifi_ssid[SSID_MAX_LEN - 1] = 0;
-      ESP_WM_LITE_config.WiFi_Creds[0].wifi_pw  [PASS_MAX_LEN - 1] = 0;
-      ESP_WM_LITE_config.WiFi_Creds[1].wifi_ssid[SSID_MAX_LEN - 1] = 0;
-      ESP_WM_LITE_config.WiFi_Creds[1].wifi_pw  [PASS_MAX_LEN - 1] = 0;
-      ESP_WM_LITE_config.board_name[BOARD_NAME_MAX_LEN - 1]  = 0;
-    }
+#endif  // USE_DYNAMIC_PARAMETERS
 
     //////////////////////////////////////////////
 
@@ -2167,10 +2145,8 @@ class ESP_WiFiManager_Lite
 
 #endif
 
-        // Don't need
-        ESP_WM_LITE_config.checkSum = 0;
-
         saveAllConfigData();
+        displayConfigData(ESP_WM_LITE_config);
 
         return false;
       }
@@ -2208,7 +2184,7 @@ class ESP_WiFiManager_Lite
 #endif
 
 #ifndef EEPROM_START
-#define EEPROM_START     0      //define 256 in DRD/MRD
+#define EEPROM_START     0      // define 256 in DRD/MRD
 #else
 #if (EEPROM_START + FLAG_DATA_SIZE + CONFIG_DATA_SIZE + FORCED_CONFIG_PORTAL_FLAG_DATA_SIZE > EEPROM_SIZE)
 #error EPROM_START + FLAG_DATA_SIZE + CONFIG_DATA_SIZE + FORCED_CONFIG_PORTAL_FLAG_DATA_SIZE > EEPROM_SIZE. Please adjust.
@@ -2553,10 +2529,8 @@ class ESP_WiFiManager_Lite
 
 #endif
 
-        // Don't need
-        ESP_WM_LITE_config.checkSum = 0;
-
         saveAllConfigData();
+        displayConfigData(ESP_WM_LITE_config);
 
         return false;
       }
@@ -2564,10 +2538,6 @@ class ESP_WiFiManager_Lite
       {
         // If SSID, PW ="blank" or NULL, stay in config mode forever until having config Data.
         return false;
-      }
-      else
-      {
-        displayConfigData(ESP_WM_LITE_config);
       }
 
       return true;
@@ -2660,7 +2630,6 @@ class ESP_WiFiManager_Lite
 
     //////////////////////////////////////////////
 
-    // NEW
     void createHTML(String& root_html_template)
     {
       String pitem;
