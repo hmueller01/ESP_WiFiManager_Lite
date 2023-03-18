@@ -2485,26 +2485,21 @@ class ESP_WiFiManager_Lite
       root_html_template = FPSTR(ESP_WM_LITE_HTML_HEAD_START);
 
 #if USING_CUSTOMS_STYLE
-
       // Using Customs style when not NULL
       if (_CustomsHeadStyle)
         root_html_template += FPSTR(_CustomsHeadStyle);
       else
         root_html_template += FPSTR(ESP_WM_LITE_HTML_HEAD_STYLE);
-
 #else
       root_html_template += FPSTR(ESP_WM_LITE_HTML_HEAD_STYLE);
 #endif
 
 #if USING_CUSTOMS_HEAD_ELEMENT
-
       if (_CustomsHeadElement)
         root_html_template += _CustomsHeadElement;
-
 #endif
 
 #if SCAN_WIFI_NETWORKS
-
       ESP_WML_LOGDEBUG1(WiFiNetworksFound, F(" SSIDs found, generating HTML now"));
       // Replace HTML <input...> with <select...>, based on WiFi network scan in startConfigurationMode()
 
@@ -2525,7 +2520,7 @@ class ESP_WiFiManager_Lite
         ListOfSSIDs = String(FPSTR(ESP_WM_LITE_OPTION_START)) + String(FPSTR(ESP_WM_LITE_NO_NETWORKS_FOUND)) + String(FPSTR(ESP_WM_LITE_OPTION_END));
 
       pitem = FPSTR(ESP_WM_LITE_HTML_HEAD_END);
-ESP_WML_LOGERROR3("1 pitem.capacity():", String(pitem.capacity()), " pitem.length():", String(pitem.length())); // TODO del log
+
 #if MANUAL_SSID_INPUT_ALLOWED
       pitem.replace("[[input_id]]",  "<input id='id' list='SSIDs'>"  + String(FPSTR(ESP_WM_LITE_DATALIST_START)) + "'SSIDs'>" +
                     ListOfSSIDs + FPSTR(ESP_WM_LITE_DATALIST_END));
@@ -2535,58 +2530,41 @@ ESP_WML_LOGERROR3("1 pitem.capacity():", String(pitem.capacity()), " pitem.lengt
       ESP_WML_LOGDEBUG1(F("pitem:"), pitem);
 #else
       pitem.replace(F("[[input_id]]"),  F("<select id='id'>")  + ListOfSSIDs + String(FPSTR(ESP_WM_LITE_SELECT_END)));
-ESP_WML_LOGERROR3("2 pitem.capacity():", String(pitem.capacity()), " pitem.length():", String(pitem.length())); // TODO del log
       pitem.replace(F("[[input_id1]]"), F("<select id='id1'>") + ListOfSSIDs + String(FPSTR(ESP_WM_LITE_SELECT_END)));
-ESP_WML_LOGERROR3("3 pitem.capacity():", String(pitem.capacity()), " pitem.length():", String(pitem.length())); // TODO del log
 #endif
 
       root_html_template += pitem + FPSTR(ESP_WM_LITE_FLDSET_START);
 
 #else
-
       pitem = FPSTR(ESP_WM_LITE_HTML_HEAD_END);
       pitem.replace("[[input_id]]",  FPSTR(ESP_WM_LITE_HTML_INPUT_ID));
       pitem.replace("[[input_id1]]", FPSTR(ESP_WM_LITE_HTML_INPUT_ID1));
       root_html_template += pitem + FPSTR(ESP_WM_LITE_FLDSET_START);
-
 #endif    // SCAN_WIFI_NETWORKS
 
 #if USE_DYNAMIC_PARAMETERS
-
       for (uint16_t i = 0; i < NUM_MENU_ITEMS; i++)
       {
         pitem = FPSTR(ESP_WM_LITE_HTML_PARAM);
-ESP_WML_LOGERROR3("4 pitem.capacity():", String(pitem.capacity()), " pitem.length():", String(pitem.length())); // TODO del log
-
         pitem.replace("{b}", myMenuItems[i].displayName);
         pitem.replace("{v}", myMenuItems[i].id);
         pitem.replace("{i}", myMenuItems[i].id);
-ESP_WML_LOGERROR3("5 pitem.capacity():", String(pitem.capacity()), " pitem.length():", String(pitem.length())); // TODO del log
-
         root_html_template += pitem;
       }
-
 #endif
 
       root_html_template += String(FPSTR(ESP_WM_LITE_FLDSET_END)) + FPSTR(ESP_WM_LITE_HTML_BUTTON) + FPSTR(ESP_WM_LITE_HTML_SCRIPT);
 
 #if USE_DYNAMIC_PARAMETERS
-
       for (uint16_t i = 0; i < NUM_MENU_ITEMS; i++)
       {
         pitem = FPSTR(ESP_WM_LITE_HTML_SCRIPT_ITEM);
-ESP_WML_LOGERROR3("6 pitem.capacity():", String(pitem.capacity()), " pitem.length():", String(pitem.length())); // TODO del log
-
         pitem.replace("{d}", myMenuItems[i].id);
-
         root_html_template += pitem;
       }
-
 #endif
 
-ESP_WML_LOGERROR3("7 root_html_template.capacity():", String(root_html_template.capacity()), " root_html_template.length():", String(root_html_template.length())); // TODO del log
       root_html_template += String(FPSTR(ESP_WM_LITE_HTML_SCRIPT_END)) + FPSTR(ESP_WM_LITE_HTML_END);
-ESP_WML_LOGERROR3("8 root_html_template.capacity():", String(root_html_template.capacity()), " root_html_template.length():", String(root_html_template.length())); // TODO del log
 
       return;
     }
