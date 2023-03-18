@@ -711,8 +711,6 @@ class ESP_WiFiManager_Lite
 
       hadConfigData = getConfigData();
 
-      isForcedConfigPortal = isForcedCP();
-
       //// New DRD/MRD ////
       //  noConfigPortal when getConfigData() OK and no MRD/DRD'ed
       if (hadConfigData && noConfigPortal && (!isForcedConfigPortal) )
@@ -1168,16 +1166,14 @@ class ESP_WiFiManager_Lite
       memset(&ESP_WM_LITE_config, 0, sizeof(ESP_WM_LITE_config));
 
 #if USE_DYNAMIC_PARAMETERS
-
       for (uint16_t i = 0; i < NUM_MENU_ITEMS; i++)
       {
         // Actual size of pdata is [maxlen + 1]
         memset(myMenuItems[i].pdata, 0, myMenuItems[i].maxlen + 1);
       }
-
 #endif
 
-      saveConfigData();
+      saveAllConfigData();
     }
 
     //////////////////////////////////////////////
@@ -1521,22 +1517,22 @@ class ESP_WiFiManager_Lite
     {
 #if REQUIRE_ONE_SET_SSID_PW
 
-      // If SSID ="blank" or NULL, or PWD length < 8 (as required by standard) => return false
+      // If SSID = "blank" or NULL, or PWD length < 8 (as required by standard) => return false
       // Only need 1 set of valid SSID/PWD
-      if (!( ( ( strncmp(ESP_WM_LITE_config.WiFi_Creds[0].wifi_ssid, WM_NO_CONFIG, strlen(WM_NO_CONFIG))
-                 && strlen(ESP_WM_LITE_config.WiFi_Creds[0].wifi_ssid) >  0 )  &&
-               (   strlen(ESP_WM_LITE_config.WiFi_Creds[0].wifi_pw) >= PASSWORD_MIN_LEN ) ) ||
-             ( ( strncmp(ESP_WM_LITE_config.WiFi_Creds[1].wifi_ssid, WM_NO_CONFIG, strlen(WM_NO_CONFIG))
-                 && strlen(ESP_WM_LITE_config.WiFi_Creds[1].wifi_ssid) >  0 )  &&
-               ( strlen(ESP_WM_LITE_config.WiFi_Creds[1].wifi_pw) >= PASSWORD_MIN_LEN ) ) ))
+      if (!( ( strncmp(ESP_WM_LITE_config.WiFi_Creds[0].wifi_ssid, WM_NO_CONFIG, strlen(WM_NO_CONFIG)) &&
+               ( strlen(ESP_WM_LITE_config.WiFi_Creds[0].wifi_ssid) >  0 ) ) &&
+               ( strlen(ESP_WM_LITE_config.WiFi_Creds[0].wifi_pw) >= PASSWORD_MIN_LEN ) ) ||
+             ( strncmp(ESP_WM_LITE_config.WiFi_Creds[1].wifi_ssid, WM_NO_CONFIG, strlen(WM_NO_CONFIG)) &&
+               ( strlen(ESP_WM_LITE_config.WiFi_Creds[1].wifi_ssid) >  0 )  &&
+               ( strlen(ESP_WM_LITE_config.WiFi_Creds[1].wifi_pw) >= PASSWORD_MIN_LEN ) ) )
 #else
 
-      // If SSID ="blank" or NULL, or PWD length < 8 (as required by standard) => invalid set
+      // If SSID = "blank" or NULL, or PWD length < 8 (as required by standard) => invalid set
       // Need both sets of valid SSID/PWD
-      if ( !strncmp(ESP_WM_LITE_config.WiFi_Creds[0].wifi_ssid,   WM_NO_CONFIG, strlen(WM_NO_CONFIG) )  ||
-           !strncmp(ESP_WM_LITE_config.WiFi_Creds[0].wifi_pw,     WM_NO_CONFIG, strlen(WM_NO_CONFIG) )  ||
-           !strncmp(ESP_WM_LITE_config.WiFi_Creds[1].wifi_ssid,   WM_NO_CONFIG, strlen(WM_NO_CONFIG) )  ||
-           !strncmp(ESP_WM_LITE_config.WiFi_Creds[1].wifi_pw,     WM_NO_CONFIG, strlen(WM_NO_CONFIG) )  ||
+      if ( !strncmp(ESP_WM_LITE_config.WiFi_Creds[0].wifi_ssid,   WM_NO_CONFIG, strlen(WM_NO_CONFIG))  ||
+           !strncmp(ESP_WM_LITE_config.WiFi_Creds[0].wifi_pw,     WM_NO_CONFIG, strlen(WM_NO_CONFIG))  ||
+           !strncmp(ESP_WM_LITE_config.WiFi_Creds[1].wifi_ssid,   WM_NO_CONFIG, strlen(WM_NO_CONFIG))  ||
+           !strncmp(ESP_WM_LITE_config.WiFi_Creds[1].wifi_pw,     WM_NO_CONFIG, strlen(WM_NO_CONFIG))  ||
            ( strlen(ESP_WM_LITE_config.WiFi_Creds[0].wifi_ssid) == 0 ) ||
            ( strlen(ESP_WM_LITE_config.WiFi_Creds[1].wifi_ssid) == 0 ) ||
            ( strlen(ESP_WM_LITE_config.WiFi_Creds[0].wifi_pw)   < PASSWORD_MIN_LEN ) ||
@@ -1915,7 +1911,7 @@ class ESP_WiFiManager_Lite
       strcpy(ESP_WM_LITE_config.header, ESP_WM_LITE_BOARD_TYPE);
 
       // Including config and dynamic data, and assume valid
-      saveConfigData();
+      saveAllConfigData();
 
       ESP_WML_LOGERROR(F("======= Start Loaded Config Data ======="));
       displayConfigData(ESP_WM_LITE_config);
@@ -1932,13 +1928,11 @@ class ESP_WiFiManager_Lite
       hadConfigData = false;
 
 #if ESP8266
-
       // Format SPIFFS if not yet
       if (!FileFS.begin())
       {
         FileFS.format();
 #else
-
       // Format SPIFFS if not yet
       if (!FileFS.begin(true))
       {
@@ -1955,6 +1949,8 @@ class ESP_WiFiManager_Lite
           return false;
         }
       }
+
+      isForcedConfigPortal = isForcedCP();
 
       if (LOAD_DEFAULT_CONFIG_DATA)
       {
@@ -2118,8 +2114,9 @@ class ESP_WiFiManager_Lite
 
       ESP_WML_LOGINFO(F("setForcedCP"));
 
+      EEPROM.begin(EEPROM_SIZE);
       EEPROM.put(CONFIG_EEPROM_START + CONFIG_DATA_SIZE, readForcedConfigPortalFlag);
-      EEPROM.commit();
+      EEPROM.end();
     }
 
     //////////////////////////////////////////////
@@ -2128,12 +2125,14 @@ class ESP_WiFiManager_Lite
     {
       ESP_WML_LOGINFO(F("clearForcedCP"));
 
+      EEPROM.begin(EEPROM_SIZE);
       EEPROM.put(CONFIG_EEPROM_START + CONFIG_DATA_SIZE, 0);
-      EEPROM.commit();
+      EEPROM.end();
     }
 
     //////////////////////////////////////////////
 
+    // Is ConfigPortal forced? EEPROM must be started before using EEPROM.begin()!
     bool isForcedCP()
     {
       uint32_t readForcedConfigPortalFlag;
@@ -2166,6 +2165,8 @@ class ESP_WiFiManager_Lite
 
 #if USE_DYNAMIC_PARAMETERS
 
+    // Get DynamicData from EEPROM buffer. EEPROM must be started before using EEPROM.begin()!
+    // Return true if checksum matches and data are read.
     bool EEPROM_getDynamicData()
     {
       if (hadDynamicData)
@@ -2186,7 +2187,7 @@ class ESP_WiFiManager_Lite
         }
       }
       EEPROM.get(offset, readCheckSum);
-      ESP_WML_LOGINFO3(F("CrCCsum=0x"), String(checkSum, HEX), F(",CrRCsum=0x"), String(readCheckSum, HEX));
+      ESP_WML_LOGINFO3(F("CrR:CCsum=0x"), String(checkSum, HEX), F(",CrR:RCsum=0x"), String(readCheckSum, HEX));
 
       if (checkSum != readCheckSum)
       {
@@ -2209,7 +2210,7 @@ class ESP_WiFiManager_Lite
           *_pointer = EEPROM.read(offset);
         }
 
-        ESP_WML_LOGDEBUG3(F("CR:pdata="), myMenuItems[i].pdata, F(",len="), myMenuItems[i].maxlen);
+        ESP_WML_LOGDEBUG3(F("CrR:pdata="), myMenuItems[i].pdata, F(",len="), myMenuItems[i].maxlen);
       }
 
       hadDynamicData = true;
@@ -2218,6 +2219,7 @@ class ESP_WiFiManager_Lite
 
     //////////////////////////////////////////////
 
+    // Put DynamicData into EEPROM buffer, but do not commit. EEPROM must be started before using EEPROM.begin()!
     void EEPROM_putDynamicData()
     {
       int checkSum = 0;
@@ -2226,21 +2228,17 @@ class ESP_WiFiManager_Lite
       for (uint16_t i = 0; i < NUM_MENU_ITEMS; i++)
       {
         char* _pointer = myMenuItems[i].pdata;
-
-        ESP_WML_LOGDEBUG3(F("CW:pdata="), myMenuItems[i].pdata, F(",len="), myMenuItems[i].maxlen);
+        ESP_WML_LOGDEBUG3(F("CrW:pdata="), myMenuItems[i].pdata, F(",len="), myMenuItems[i].maxlen);
 
         for (uint16_t j = 0; j < myMenuItems[i].maxlen; j++, _pointer++, offset++)
         {
           EEPROM.write(offset, *_pointer);
-
           checkSum += *_pointer;
         }
       }
 
       EEPROM.put(offset, checkSum);
-      //EEPROM.commit();
-
-      ESP_WML_LOGINFO1(F("CrWCSum=0x"), String(checkSum, HEX));
+      ESP_WML_LOGINFO1(F("CrW:CSum=0x"), String(checkSum, HEX));
     }
 #endif
 
@@ -2252,9 +2250,9 @@ class ESP_WiFiManager_Lite
       ESP_WM_LITE_config.checkSum = calChecksum;
       ESP_WML_LOGINFO3(F("SaveEEPROM,sz="), EEPROM_SIZE, F(",CSum=0x"), String(calChecksum, HEX))
 
+      EEPROM.begin(EEPROM_SIZE);
       EEPROM.put(CONFIG_EEPROM_START, ESP_WM_LITE_config);
-
-      EEPROM.commit();
+      EEPROM.end();
     }
 
     //////////////////////////////////////////////
@@ -2265,13 +2263,12 @@ class ESP_WiFiManager_Lite
       ESP_WM_LITE_config.checkSum = calChecksum;
       ESP_WML_LOGINFO3(F("SaveEEPROM,sz="), EEPROM_SIZE, F(",CSum=0x"), String(calChecksum, HEX))
 
+      EEPROM.begin(EEPROM_SIZE);
       EEPROM.put(CONFIG_EEPROM_START, ESP_WM_LITE_config);
-
 #if USE_DYNAMIC_PARAMETERS
       EEPROM_putDynamicData();
 #endif
-
-      EEPROM.commit();
+      EEPROM.end();
     }
 
     //////////////////////////////////////////////
@@ -2283,7 +2280,7 @@ class ESP_WiFiManager_Lite
       strcpy(ESP_WM_LITE_config.header, ESP_WM_LITE_BOARD_TYPE);
 
       // Including config and dynamic data, and assume valid
-      saveConfigData();
+      saveAllConfigData();
 
       ESP_WML_LOGINFO(F("======= Start Loaded Config Data ======="));
       displayConfigData(ESP_WM_LITE_config);
@@ -2298,32 +2295,28 @@ class ESP_WiFiManager_Lite
 
       hadConfigData = false;
 
-      EEPROM.begin(EEPROM_SIZE);
-      ESP_WML_LOGINFO1(F("EEPROMsz:"), EEPROM_SIZE);
-
       if (LOAD_DEFAULT_CONFIG_DATA)
       {
-        // Load Config Data from Sketch
-        memcpy(&ESP_WM_LITE_config, &defaultConfig, sizeof(ESP_WM_LITE_config));
-        strcpy(ESP_WM_LITE_config.header, ESP_WM_LITE_BOARD_TYPE);
-
-        // Including config and dynamic data, and assume valid
-        saveAllConfigData();
-
-        ESP_WML_LOGINFO(F("======= Start Loaded Config Data ======="));
-        displayConfigData(ESP_WM_LITE_config);
-
+        loadAndSaveDefaultConfigData();
         // Don't need Config Portal anymore
         return true;
       }
       else
       {
+        EEPROM.begin(EEPROM_SIZE);
+        ESP_WML_LOGINFO1(F("EEPROMsz:"), EEPROM_SIZE);
         // Load data from EEPROM
         EEPROM.get(CONFIG_EEPROM_START, ESP_WM_LITE_config);
+#if USE_DYNAMIC_PARAMETERS
+        // Load dynamic data from EEPROM
+        dynamicDataValid = EEPROM_getDynamicData();
+#endif
+        isForcedConfigPortal = isForcedCP();
+        EEPROM.end();
 
         if ( !isWiFiConfigValid() )
         {
-          // If SSID, PW ="blank" or NULL, stay in config mode forever until having config Data.
+          // If SSID, PW = "blank" or NULL, stay in config mode forever until having config Data.
           return false;
         }
 
@@ -2331,15 +2324,10 @@ class ESP_WiFiManager_Lite
         displayConfigData(ESP_WM_LITE_config);
 
         calChecksum = calcChecksum();
-
         ESP_WML_LOGINFO3(F("CCSum=0x"), String(calChecksum, HEX),
                          F(",RCSum=0x"), String(ESP_WM_LITE_config.checkSum, HEX));
 
 #if USE_DYNAMIC_PARAMETERS
-
-        // Load dynamic data from EEPROM
-        dynamicDataValid = EEPROM_getDynamicData();
-
         if (dynamicDataValid)
         {
           ESP_WML_LOGINFO(F("Valid Stored Dynamic Data"));
@@ -2348,7 +2336,6 @@ class ESP_WiFiManager_Lite
         {
           ESP_WML_LOGINFO(F("Invalid Stored Dynamic Data. Ignored"));
         }
-
 #endif
       }
 
@@ -2383,7 +2370,7 @@ class ESP_WiFiManager_Lite
       }
       else if ( !isWiFiConfigValid() )
       {
-        // If SSID, PW ="blank" or NULL, stay in config mode forever until having config Data.
+        // If SSID, PW = "blank" or NULL, stay in config mode forever until having config Data.
         return false;
       }
 
@@ -2525,7 +2512,7 @@ class ESP_WiFiManager_Lite
         ListOfSSIDs = String(FPSTR(ESP_WM_LITE_OPTION_START)) + String(FPSTR(ESP_WM_LITE_NO_NETWORKS_FOUND)) + String(FPSTR(ESP_WM_LITE_OPTION_END));
 
       pitem = FPSTR(ESP_WM_LITE_HTML_HEAD_END);
-ESP_WML_LOGERROR3("1 pitem.capacity():", String(pitem.capacity()), " pitem.length():", String(pitem.length())); // TODO
+ESP_WML_LOGERROR3("1 pitem.capacity():", String(pitem.capacity()), " pitem.length():", String(pitem.length())); // TODO del log
 #if MANUAL_SSID_INPUT_ALLOWED
       pitem.replace("[[input_id]]",  "<input id='id' list='SSIDs'>"  + String(FPSTR(ESP_WM_LITE_DATALIST_START)) + "'SSIDs'>" +
                     ListOfSSIDs + FPSTR(ESP_WM_LITE_DATALIST_END));
@@ -2535,9 +2522,9 @@ ESP_WML_LOGERROR3("1 pitem.capacity():", String(pitem.capacity()), " pitem.lengt
       ESP_WML_LOGDEBUG1(F("pitem:"), pitem);
 #else
       pitem.replace(F("[[input_id]]"),  F("<select id='id'>")  + ListOfSSIDs + String(FPSTR(ESP_WM_LITE_SELECT_END)));
-ESP_WML_LOGERROR3("2 pitem.capacity():", String(pitem.capacity()), " pitem.length():", String(pitem.length())); // TODO
+ESP_WML_LOGERROR3("2 pitem.capacity():", String(pitem.capacity()), " pitem.length():", String(pitem.length())); // TODO del log
       pitem.replace(F("[[input_id1]]"), F("<select id='id1'>") + ListOfSSIDs + String(FPSTR(ESP_WM_LITE_SELECT_END)));
-ESP_WML_LOGERROR3("3 pitem.capacity():", String(pitem.capacity()), " pitem.length():", String(pitem.length())); // TODO
+ESP_WML_LOGERROR3("3 pitem.capacity():", String(pitem.capacity()), " pitem.length():", String(pitem.length())); // TODO del log
 #endif
 
       root_html_template += pitem + FPSTR(ESP_WM_LITE_FLDSET_START);
@@ -2556,12 +2543,12 @@ ESP_WML_LOGERROR3("3 pitem.capacity():", String(pitem.capacity()), " pitem.lengt
       for (uint16_t i = 0; i < NUM_MENU_ITEMS; i++)
       {
         pitem = FPSTR(ESP_WM_LITE_HTML_PARAM);
-ESP_WML_LOGERROR3("4 pitem.capacity():", String(pitem.capacity()), " pitem.length():", String(pitem.length())); // TODO
+ESP_WML_LOGERROR3("4 pitem.capacity():", String(pitem.capacity()), " pitem.length():", String(pitem.length())); // TODO del log
 
         pitem.replace("{b}", myMenuItems[i].displayName);
         pitem.replace("{v}", myMenuItems[i].id);
         pitem.replace("{i}", myMenuItems[i].id);
-ESP_WML_LOGERROR3("5 pitem.capacity():", String(pitem.capacity()), " pitem.length():", String(pitem.length())); // TODO
+ESP_WML_LOGERROR3("5 pitem.capacity():", String(pitem.capacity()), " pitem.length():", String(pitem.length())); // TODO del log
 
         root_html_template += pitem;
       }
@@ -2575,7 +2562,7 @@ ESP_WML_LOGERROR3("5 pitem.capacity():", String(pitem.capacity()), " pitem.lengt
       for (uint16_t i = 0; i < NUM_MENU_ITEMS; i++)
       {
         pitem = FPSTR(ESP_WM_LITE_HTML_SCRIPT_ITEM);
-ESP_WML_LOGERROR3("6 pitem.capacity():", String(pitem.capacity()), " pitem.length():", String(pitem.length())); // TODO
+ESP_WML_LOGERROR3("6 pitem.capacity():", String(pitem.capacity()), " pitem.length():", String(pitem.length())); // TODO del log
 
         pitem.replace("{d}", myMenuItems[i].id);
 
@@ -2584,9 +2571,9 @@ ESP_WML_LOGERROR3("6 pitem.capacity():", String(pitem.capacity()), " pitem.lengt
 
 #endif
 
-ESP_WML_LOGERROR3("7 root_html_template.capacity():", String(root_html_template.capacity()), " root_html_template.length():", String(root_html_template.length())); // TODO
+ESP_WML_LOGERROR3("7 root_html_template.capacity():", String(root_html_template.capacity()), " root_html_template.length():", String(root_html_template.length())); // TODO del log
       root_html_template += String(FPSTR(ESP_WM_LITE_HTML_SCRIPT_END)) + FPSTR(ESP_WM_LITE_HTML_END);
-ESP_WML_LOGERROR3("8 root_html_template.capacity():", String(root_html_template.capacity()), " root_html_template.length():", String(root_html_template.length())); // TODO
+ESP_WML_LOGERROR3("8 root_html_template.capacity():", String(root_html_template.capacity()), " root_html_template.length():", String(root_html_template.length())); // TODO del log
 
       return;
     }
