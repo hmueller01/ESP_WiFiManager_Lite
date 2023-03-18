@@ -249,7 +249,11 @@ uint32_t getChipOUI();
   // For ESP32, You must select one to be true (EEPROM or SPIFFS/LittleFS)
   // For ESP8266, You must select one to be true (RTC, EEPROM or SPIFFS/LittleFS)
   // Otherwise, library will use default EEPROM storage
-  #define ESP8266_MRD_USE_RTC     false   //true
+  #ifdef ESP8266
+    #define ESP8266_MRD_USE_RTC     true
+  #else
+    #define ESP8266_MRD_USE_RTC     false
+  #endif
 
   #if USE_LITTLEFS
     #define ESP_MRD_USE_LITTLEFS    true
@@ -262,7 +266,11 @@ uint32_t getChipOUI();
   #else
     #define ESP_MRD_USE_LITTLEFS    false
     #define ESP_MRD_USE_SPIFFS      false
-    #define ESP_MRD_USE_EEPROM      true
+    #if ESP8266_MRD_USE_RTC
+      #define ESP_MRD_USE_EEPROM    false
+    #else
+      #define ESP_MRD_USE_EEPROM    true
+    #endif
   #endif
 
   #ifndef MULTIRESETDETECTOR_DEBUG
@@ -2086,6 +2094,11 @@ class ESP_WiFiManager_Lite
 #undef EEPROM_SIZE
 #define EEPROM_SIZE     2048
 #endif
+
+#ifndef FLAG_DATA_SIZE
+#define FLAG_DATA_SIZE  0
+#endif
+
     // FLAG_DATA_SIZE is 4, to store DRD/MRD flag
 #if (EEPROM_SIZE < FLAG_DATA_SIZE + CONFIG_DATA_SIZE)
 #warning EEPROM_SIZE must be > CONFIG_DATA_SIZE. Reset to 512
@@ -2095,7 +2108,7 @@ class ESP_WiFiManager_Lite
 #endif
 
 #ifndef EEPROM_START
-#define EEPROM_START     0      // define 256 in DRD/MRD
+#define EEPROM_START    0      // define 256 in DRD/MRD
 #else
 #if (EEPROM_START + FLAG_DATA_SIZE + CONFIG_DATA_SIZE + FORCED_CONFIG_PORTAL_FLAG_DATA_SIZE > EEPROM_SIZE)
 #error EPROM_START + FLAG_DATA_SIZE + CONFIG_DATA_SIZE + FORCED_CONFIG_PORTAL_FLAG_DATA_SIZE > EEPROM_SIZE. Please adjust.
