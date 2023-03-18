@@ -1639,8 +1639,7 @@ class ESP_WiFiManager_Lite
     bool isForcedCP()
     {
       uint32_t readForcedConfigPortalFlag;
-
-      ESP_WML_LOGDEBUG(F("Check if isForcedCP"));
+      bool retForcedConfigPortal = false;
 
       File file = FileFS.open(CONFIG_PORTAL_FILENAME, "r");
       ESP_WML_LOGINFO(F("LoadCPFile "));
@@ -1670,17 +1669,16 @@ class ESP_WiFiManager_Lite
       if (readForcedConfigPortalFlag == FORCED_CONFIG_PORTAL_FLAG_DATA)
       {
         persForcedConfigPortal = false;
-        return true;
+        retForcedConfigPortal = true;
       }
       else if (readForcedConfigPortalFlag == FORCED_PERS_CONFIG_PORTAL_FLAG_DATA)
       {
         persForcedConfigPortal = true;
-        return true;
+        retForcedConfigPortal = true;
       }
-      else
-      {
-        return false;
-      }
+
+      ESP_WML_LOGINFO1(F("Check if isForcedCP: "), retForcedConfigPortal ? F("true") : F("false"));
+      return retForcedConfigPortal;
     }
 
     //////////////////////////////////////////////
@@ -2149,11 +2147,8 @@ class ESP_WiFiManager_Lite
     bool isForcedCP()
     {
       uint32_t readForcedConfigPortalFlag;
+      bool retForcedConfigPortal = false;
 
-      ESP_WML_LOGINFO(F("Check if isForcedCP"));
-
-      // Return true if forced CP (0xDEADBEEF read at offset EPROM_START + DRD_FLAG_DATA_SIZE + CONFIG_DATA_SIZE)
-      // => set flag noForcedConfigPortal = false
       EEPROM.get(CONFIG_EEPROM_START + CONFIG_DATA_SIZE, readForcedConfigPortalFlag);
 
       // Return true if forced CP (0xDEADBEEF read at offset EPROM_START + DRD_FLAG_DATA_SIZE + CONFIG_DATA_SIZE)
@@ -2161,17 +2156,16 @@ class ESP_WiFiManager_Lite
       if (readForcedConfigPortalFlag == FORCED_CONFIG_PORTAL_FLAG_DATA)
       {
         persForcedConfigPortal = false;
-        return true;
+        retForcedConfigPortal = true;
       }
       else if (readForcedConfigPortalFlag == FORCED_PERS_CONFIG_PORTAL_FLAG_DATA)
       {
         persForcedConfigPortal = true;
-        return true;
+        retForcedConfigPortal = true;
       }
-      else
-      {
-        return false;
-      }
+
+      ESP_WML_LOGINFO1(F("Check if isForcedCP: "), retForcedConfigPortal ? F("true") : F("false"));
+      return retForcedConfigPortal;
     }
 
     //////////////////////////////////////////////
