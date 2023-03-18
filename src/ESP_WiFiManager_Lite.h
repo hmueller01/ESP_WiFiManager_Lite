@@ -1328,7 +1328,10 @@ class ESP_WiFiManager_Lite
 
 #else   // #if ( USE_LITTLEFS || USE_SPIFFS )
 
-      return EEPROM_getDynamicData();
+      EEPROM.begin(EEPROM_SIZE);
+      bool valid = EEPROM_getDynamicData();
+      EEPROM.end();
+      return valid;
 
 #endif   // #if ( USE_LITTLEFS || USE_SPIFFS )
     }
@@ -1355,7 +1358,9 @@ class ESP_WiFiManager_Lite
 
 #else   // #if ( USE_LITTLEFS || USE_SPIFFS )
 
+      EEPROM.begin(EEPROM_SIZE);
       EEPROM_putDynamicData();
+      EEPROM.end();
 
 #endif   // #if ( USE_LITTLEFS || USE_SPIFFS )
     }
@@ -2313,10 +2318,32 @@ class ESP_WiFiManager_Lite
 
     bool EEPROM_getDynamicData()
     {
+      if (hadDynamicData)
+      {
+        return true;
+      }
+
       int readCheckSum;
       int checkSum = 0;
       uint16_t offset = CONFIG_EEPROM_START + sizeof(ESP_WM_LITE_config) + FORCED_CONFIG_PORTAL_FLAG_DATA_SIZE;
 
+      // calculate ckecksum first, before overwriting myMenuItems buffer
+      for (uint16_t i = 0; i < NUM_MENU_ITEMS; i++)
+      {
+        for (uint16_t j = 0; j < myMenuItems[i].maxlen; j++, offset++)
+        {
+          checkSum += EEPROM.read(offset);
+        }
+      }
+      EEPROM.get(offset, readCheckSum);
+      ESP_WML_LOGINFO3(F("CrCCsum=0x"), String(checkSum, HEX), F(",CrRCsum=0x"), String(readCheckSum, HEX));
+
+      if (checkSum != readCheckSum)
+      {
+        return false;
+      }
+
+      offset = CONFIG_EEPROM_START + sizeof(ESP_WM_LITE_config) + FORCED_CONFIG_PORTAL_FLAG_DATA_SIZE;
       totalDataSize = sizeof(ESP_WM_LITE_config) + sizeof(readCheckSum);
 
       for (uint16_t i = 0; i < NUM_MENU_ITEMS; i++)
@@ -2330,22 +2357,12 @@ class ESP_WiFiManager_Lite
         for (uint16_t j = 0; j < myMenuItems[i].maxlen; j++, _pointer++, offset++)
         {
           *_pointer = EEPROM.read(offset);
-
-          checkSum += *_pointer;
         }
 
         ESP_WML_LOGDEBUG3(F("CR:pdata="), myMenuItems[i].pdata, F(",len="), myMenuItems[i].maxlen);
       }
 
-      EEPROM.get(offset, readCheckSum);
-
-      ESP_WML_LOGINFO3(F("CrCCsum=0x"), String(checkSum, HEX), F(",CrRCsum=0x"), String(readCheckSum, HEX));
-
-      if ( checkSum != readCheckSum)
-      {
-        return false;
-      }
-
+      hadDynamicData = true;
       return true;
     }
 
@@ -2505,29 +2522,9 @@ class ESP_WiFiManager_Lite
           strcpy(ESP_WM_LITE_config.WiFi_Creds[1].wifi_ssid,   WM_NO_CONFIG);
           strcpy(ESP_WM_LITE_config.WiFi_Creds[1].wifi_pw,     WM_NO_CONFIG);
           strcpy(ESP_WM_LITE_config.board_name, WM_NO_CONFIG);
-
-#if USE_DYNAMIC_PARAMETERS
-
-          for (uint16_t i = 0; i < NUM_MENU_ITEMS; i++)
-          {
-            // Actual size of pdata is [maxlen + 1]
-            memset(myMenuItems[i].pdata, 0, myMenuItems[i].maxlen + 1);
-            strncpy(myMenuItems[i].pdata, WM_NO_CONFIG, myMenuItems[i].maxlen);
-          }
-
-#endif
         }
 
         strcpy(ESP_WM_LITE_config.header, ESP_WM_LITE_BOARD_TYPE);
-
-#if USE_DYNAMIC_PARAMETERS
-
-        for (uint16_t i = 0; i < NUM_MENU_ITEMS; i++)
-        {
-          ESP_WML_LOGDEBUG3(F("g:myMenuItems["), i, F("]="), myMenuItems[i].pdata );
-        }
-
-#endif
 
         saveAllConfigData();
         displayConfigData(ESP_WM_LITE_config);
@@ -2678,7 +2675,7 @@ class ESP_WiFiManager_Lite
         ListOfSSIDs = String(FPSTR(ESP_WM_LITE_OPTION_START)) + String(FPSTR(ESP_WM_LITE_NO_NETWORKS_FOUND)) + String(FPSTR(ESP_WM_LITE_OPTION_END));
 
       pitem = FPSTR(ESP_WM_LITE_HTML_HEAD_END);
-
+ESP_WML_LOGERROR3("1 pitem.capacity():", String(pitem.capacity()), " pitem.length():", String(pitem.length())); // TODO
 #if MANUAL_SSID_INPUT_ALLOWED
       pitem.replace("[[input_id]]",  "<input id='id' list='SSIDs'>"  + String(FPSTR(ESP_WM_LITE_DATALIST_START)) + "'SSIDs'>" +
                     ListOfSSIDs + FPSTR(ESP_WM_LITE_DATALIST_END));
@@ -2687,8 +2684,10 @@ class ESP_WiFiManager_Lite
                     ListOfSSIDs + FPSTR(ESP_WM_LITE_DATALIST_END));
       ESP_WML_LOGDEBUG1(F("pitem:"), pitem);
 #else
-      pitem.replace("[[input_id]]",  "<select id='id'>"  + ListOfSSIDs + FPSTR(ESP_WM_LITE_SELECT_END));
-      pitem.replace("[[input_id1]]", "<select id='id1'>" + ListOfSSIDs + FPSTR(ESP_WM_LITE_SELECT_END));
+      pitem.replace(F("[[input_id]]"),  F("<select id='id'>")  + ListOfSSIDs + String(FPSTR(ESP_WM_LITE_SELECT_END)));
+ESP_WML_LOGERROR3("2 pitem.capacity():", String(pitem.capacity()), " pitem.length():", String(pitem.length())); // TODO
+      pitem.replace(F("[[input_id1]]"), F("<select id='id1'>") + ListOfSSIDs + String(FPSTR(ESP_WM_LITE_SELECT_END)));
+ESP_WML_LOGERROR3("3 pitem.capacity():", String(pitem.capacity()), " pitem.length():", String(pitem.length())); // TODO
 #endif
 
       root_html_template += pitem + FPSTR(ESP_WM_LITE_FLDSET_START);
@@ -2707,10 +2706,12 @@ class ESP_WiFiManager_Lite
       for (uint16_t i = 0; i < NUM_MENU_ITEMS; i++)
       {
         pitem = FPSTR(ESP_WM_LITE_HTML_PARAM);
+ESP_WML_LOGERROR3("4 pitem.capacity():", String(pitem.capacity()), " pitem.length():", String(pitem.length())); // TODO
 
         pitem.replace("{b}", myMenuItems[i].displayName);
         pitem.replace("{v}", myMenuItems[i].id);
         pitem.replace("{i}", myMenuItems[i].id);
+ESP_WML_LOGERROR3("5 pitem.capacity():", String(pitem.capacity()), " pitem.length():", String(pitem.length())); // TODO
 
         root_html_template += pitem;
       }
@@ -2724,6 +2725,7 @@ class ESP_WiFiManager_Lite
       for (uint16_t i = 0; i < NUM_MENU_ITEMS; i++)
       {
         pitem = FPSTR(ESP_WM_LITE_HTML_SCRIPT_ITEM);
+ESP_WML_LOGERROR3("6 pitem.capacity():", String(pitem.capacity()), " pitem.length():", String(pitem.length())); // TODO
 
         pitem.replace("{d}", myMenuItems[i].id);
 
@@ -2732,7 +2734,9 @@ class ESP_WiFiManager_Lite
 
 #endif
 
+ESP_WML_LOGERROR3("7 root_html_template.capacity():", String(root_html_template.capacity()), " root_html_template.length():", String(root_html_template.length())); // TODO
       root_html_template += String(FPSTR(ESP_WM_LITE_HTML_SCRIPT_END)) + FPSTR(ESP_WM_LITE_HTML_END);
+ESP_WML_LOGERROR3("8 root_html_template.capacity():", String(root_html_template.capacity()), " root_html_template.length():", String(root_html_template.length())); // TODO
 
       return;
     }
