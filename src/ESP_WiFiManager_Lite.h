@@ -249,7 +249,11 @@ uint32_t getChipOUI();
   // For ESP32, You must select one to be true (EEPROM or SPIFFS/LittleFS)
   // For ESP8266, You must select one to be true (RTC, EEPROM or SPIFFS/LittleFS)
   // Otherwise, library will use default EEPROM storage
-  #define ESP8266_MRD_USE_RTC     false   //true
+  #ifdef ESP8266
+    #define ESP8266_MRD_USE_RTC     true
+  #else
+    #define ESP8266_MRD_USE_RTC     false
+  #endif
 
   #if USE_LITTLEFS
     #define ESP_MRD_USE_LITTLEFS    true
@@ -262,7 +266,11 @@ uint32_t getChipOUI();
   #else
     #define ESP_MRD_USE_LITTLEFS    false
     #define ESP_MRD_USE_SPIFFS      false
-    #define ESP_MRD_USE_EEPROM      true
+    #if ESP8266_MRD_USE_RTC
+      #define ESP_MRD_USE_EEPROM    false
+    #else
+      #define ESP_MRD_USE_EEPROM    true
+    #endif
   #endif
 
   #ifndef MULTIRESETDETECTOR_DEBUG
@@ -710,8 +718,6 @@ class ESP_WiFiManager_Lite
       ESP_WML_LOGINFO1(F("Hostname="), RFC952_hostname);
 
       hadConfigData = getConfigData();
-
-      isForcedConfigPortal = isForcedCP();
 
       //// New DRD/MRD ////
       //  noConfigPortal when getConfigData() OK and no MRD/DRD'ed
@@ -1168,16 +1174,14 @@ class ESP_WiFiManager_Lite
       memset(&ESP_WM_LITE_config, 0, sizeof(ESP_WM_LITE_config));
 
 #if USE_DYNAMIC_PARAMETERS
-
       for (uint16_t i = 0; i < NUM_MENU_ITEMS; i++)
       {
         // Actual size of pdata is [maxlen + 1]
         memset(myMenuItems[i].pdata, 0, myMenuItems[i].maxlen + 1);
       }
-
 #endif
 
-      saveConfigData();
+      saveAllConfigData();
     }
 
     //////////////////////////////////////////////
@@ -1328,7 +1332,10 @@ class ESP_WiFiManager_Lite
 
 #else   // #if ( USE_LITTLEFS || USE_SPIFFS )
 
-      return EEPROM_getDynamicData();
+      EEPROM.begin(EEPROM_SIZE);
+      bool valid = EEPROM_getDynamicData();
+      EEPROM.end();
+      return valid;
 
 #endif   // #if ( USE_LITTLEFS || USE_SPIFFS )
     }
@@ -1355,7 +1362,9 @@ class ESP_WiFiManager_Lite
 
 #else   // #if ( USE_LITTLEFS || USE_SPIFFS )
 
+      EEPROM.begin(EEPROM_SIZE);
       EEPROM_putDynamicData();
+      EEPROM.end();
 
 #endif   // #if ( USE_LITTLEFS || USE_SPIFFS )
     }
@@ -1516,22 +1525,22 @@ class ESP_WiFiManager_Lite
     {
 #if REQUIRE_ONE_SET_SSID_PW
 
-      // If SSID ="blank" or NULL, or PWD length < 8 (as required by standard) => return false
+      // If SSID = "blank" or NULL, or PWD length < 8 (as required by standard) => return false
       // Only need 1 set of valid SSID/PWD
-      if (!( ( ( strncmp(ESP_WM_LITE_config.WiFi_Creds[0].wifi_ssid, WM_NO_CONFIG, strlen(WM_NO_CONFIG))
-                 && strlen(ESP_WM_LITE_config.WiFi_Creds[0].wifi_ssid) >  0 )  &&
-               (   strlen(ESP_WM_LITE_config.WiFi_Creds[0].wifi_pw) >= PASSWORD_MIN_LEN ) ) ||
-             ( ( strncmp(ESP_WM_LITE_config.WiFi_Creds[1].wifi_ssid, WM_NO_CONFIG, strlen(WM_NO_CONFIG))
-                 && strlen(ESP_WM_LITE_config.WiFi_Creds[1].wifi_ssid) >  0 )  &&
-               ( strlen(ESP_WM_LITE_config.WiFi_Creds[1].wifi_pw) >= PASSWORD_MIN_LEN ) ) ))
+      if (!( ( strncmp(ESP_WM_LITE_config.WiFi_Creds[0].wifi_ssid, WM_NO_CONFIG, strlen(WM_NO_CONFIG)) &&
+               ( strlen(ESP_WM_LITE_config.WiFi_Creds[0].wifi_ssid) >  0 ) ) &&
+               ( strlen(ESP_WM_LITE_config.WiFi_Creds[0].wifi_pw) >= PASSWORD_MIN_LEN ) ) ||
+             ( strncmp(ESP_WM_LITE_config.WiFi_Creds[1].wifi_ssid, WM_NO_CONFIG, strlen(WM_NO_CONFIG)) &&
+               ( strlen(ESP_WM_LITE_config.WiFi_Creds[1].wifi_ssid) >  0 )  &&
+               ( strlen(ESP_WM_LITE_config.WiFi_Creds[1].wifi_pw) >= PASSWORD_MIN_LEN ) ) )
 #else
 
-      // If SSID ="blank" or NULL, or PWD length < 8 (as required by standard) => invalid set
+      // If SSID = "blank" or NULL, or PWD length < 8 (as required by standard) => invalid set
       // Need both sets of valid SSID/PWD
-      if ( !strncmp(ESP_WM_LITE_config.WiFi_Creds[0].wifi_ssid,   WM_NO_CONFIG, strlen(WM_NO_CONFIG) )  ||
-           !strncmp(ESP_WM_LITE_config.WiFi_Creds[0].wifi_pw,     WM_NO_CONFIG, strlen(WM_NO_CONFIG) )  ||
-           !strncmp(ESP_WM_LITE_config.WiFi_Creds[1].wifi_ssid,   WM_NO_CONFIG, strlen(WM_NO_CONFIG) )  ||
-           !strncmp(ESP_WM_LITE_config.WiFi_Creds[1].wifi_pw,     WM_NO_CONFIG, strlen(WM_NO_CONFIG) )  ||
+      if ( !strncmp(ESP_WM_LITE_config.WiFi_Creds[0].wifi_ssid,   WM_NO_CONFIG, strlen(WM_NO_CONFIG))  ||
+           !strncmp(ESP_WM_LITE_config.WiFi_Creds[0].wifi_pw,     WM_NO_CONFIG, strlen(WM_NO_CONFIG))  ||
+           !strncmp(ESP_WM_LITE_config.WiFi_Creds[1].wifi_ssid,   WM_NO_CONFIG, strlen(WM_NO_CONFIG))  ||
+           !strncmp(ESP_WM_LITE_config.WiFi_Creds[1].wifi_pw,     WM_NO_CONFIG, strlen(WM_NO_CONFIG))  ||
            ( strlen(ESP_WM_LITE_config.WiFi_Creds[0].wifi_ssid) == 0 ) ||
            ( strlen(ESP_WM_LITE_config.WiFi_Creds[1].wifi_ssid) == 0 ) ||
            ( strlen(ESP_WM_LITE_config.WiFi_Creds[0].wifi_pw)   < PASSWORD_MIN_LEN ) ||
@@ -1677,96 +1686,6 @@ class ESP_WiFiManager_Lite
     //////////////////////////////////////////////
 
 #if USE_DYNAMIC_PARAMETERS
-
-    bool checkDynamicData()
-    {
-      int checkSum = 0;
-      int readCheckSum;
-      char* readBuffer;
-
-      File file = FileFS.open(CREDENTIALS_FILENAME, "r");
-      ESP_WML_LOGINFO(F("LoadCredFile "));
-
-      if (!file)
-      {
-        ESP_WML_LOGINFO(F("failed"));
-
-        // Trying open redundant config file
-        file = FileFS.open(CREDENTIALS_FILENAME_BACKUP, "r");
-        ESP_WML_LOGINFO(F("LoadBkUpCredFile "));
-
-        if (!file)
-        {
-          ESP_WML_LOGINFO(F("failed"));
-          return false;
-        }
-      }
-
-      // Find the longest pdata, then dynamically allocate buffer. Remember to free when done
-      // This is used to store tempo data to calculate checksum to see of data is valid
-      // We dont like to destroy myMenuItems[i].pdata with invalid data
-
-      uint16_t maxBufferLength = 0;
-
-      for (uint16_t i = 0; i < NUM_MENU_ITEMS; i++)
-      {
-        if (myMenuItems[i].maxlen > maxBufferLength)
-          maxBufferLength = myMenuItems[i].maxlen;
-      }
-
-      if (maxBufferLength > 0)
-      {
-        readBuffer = new char[ maxBufferLength + 1 ];
-
-        // check to see NULL => stop and return false
-        if (readBuffer == NULL)
-        {
-          ESP_WML_LOGERROR(F("ChkCrR: Error can't allocate buffer."));
-          return false;
-        }
-        else
-        {
-          ESP_WML_LOGDEBUG1(F("ChkCrR: Buffer allocated, sz="), maxBufferLength + 1);
-        }
-
-        for (uint16_t i = 0; i < NUM_MENU_ITEMS; i++)
-        {
-          char* _pointer = readBuffer;
-  
-          // Actual size of pdata is [maxlen + 1]
-          memset(readBuffer, 0, myMenuItems[i].maxlen + 1);
-  
-          file.readBytes(_pointer, myMenuItems[i].maxlen);
-  
-          ESP_WML_LOGDEBUG3(F("ChkCrR:pdata="), readBuffer, F(",len="), myMenuItems[i].maxlen);
-  
-          for (uint16_t j = 0; j < myMenuItems[i].maxlen; j++, _pointer++)
-          {
-            checkSum += *_pointer;
-          }
-        }
-  
-        file.readBytes((char *) &readCheckSum, sizeof(readCheckSum));
-  
-        ESP_WML_LOGINFO(F("OK"));
-        file.close();
-  
-        ESP_WML_LOGINFO3(F("CrCCsum=0x"), String(checkSum, HEX), F(",CrRCsum=0x"), String(readCheckSum, HEX));
-  
-        // Free buffer
-        delete [] readBuffer;
-        ESP_WML_LOGDEBUG(F("Buffer freed"));
-  
-        if ( checkSum == readCheckSum)
-        {
-          return true;
-        }
-      }
-
-      return false;
-    }
-
-    //////////////////////////////////////////////
 
     bool loadDynamicData()
     {
@@ -2000,7 +1919,7 @@ class ESP_WiFiManager_Lite
       strcpy(ESP_WM_LITE_config.header, ESP_WM_LITE_BOARD_TYPE);
 
       // Including config and dynamic data, and assume valid
-      saveConfigData();
+      saveAllConfigData();
 
       ESP_WML_LOGERROR(F("======= Start Loaded Config Data ======="));
       displayConfigData(ESP_WM_LITE_config);
@@ -2017,13 +1936,11 @@ class ESP_WiFiManager_Lite
       hadConfigData = false;
 
 #if ESP8266
-
       // Format SPIFFS if not yet
       if (!FileFS.begin())
       {
         FileFS.format();
 #else
-
       // Format SPIFFS if not yet
       if (!FileFS.begin(true))
       {
@@ -2040,6 +1957,8 @@ class ESP_WiFiManager_Lite
           return false;
         }
       }
+
+      isForcedConfigPortal = isForcedCP();
 
       if (LOAD_DEFAULT_CONFIG_DATA)
       {
@@ -2175,6 +2094,11 @@ class ESP_WiFiManager_Lite
 #undef EEPROM_SIZE
 #define EEPROM_SIZE     2048
 #endif
+
+#ifndef FLAG_DATA_SIZE
+#define FLAG_DATA_SIZE  0
+#endif
+
     // FLAG_DATA_SIZE is 4, to store DRD/MRD flag
 #if (EEPROM_SIZE < FLAG_DATA_SIZE + CONFIG_DATA_SIZE)
 #warning EEPROM_SIZE must be > CONFIG_DATA_SIZE. Reset to 512
@@ -2184,7 +2108,7 @@ class ESP_WiFiManager_Lite
 #endif
 
 #ifndef EEPROM_START
-#define EEPROM_START     0      // define 256 in DRD/MRD
+#define EEPROM_START    0      // define 256 in DRD/MRD
 #else
 #if (EEPROM_START + FLAG_DATA_SIZE + CONFIG_DATA_SIZE + FORCED_CONFIG_PORTAL_FLAG_DATA_SIZE > EEPROM_SIZE)
 #error EPROM_START + FLAG_DATA_SIZE + CONFIG_DATA_SIZE + FORCED_CONFIG_PORTAL_FLAG_DATA_SIZE > EEPROM_SIZE. Please adjust.
@@ -2203,8 +2127,9 @@ class ESP_WiFiManager_Lite
 
       ESP_WML_LOGINFO(F("setForcedCP"));
 
+      EEPROM.begin(EEPROM_SIZE);
       EEPROM.put(CONFIG_EEPROM_START + CONFIG_DATA_SIZE, readForcedConfigPortalFlag);
-      EEPROM.commit();
+      EEPROM.end();
     }
 
     //////////////////////////////////////////////
@@ -2213,12 +2138,14 @@ class ESP_WiFiManager_Lite
     {
       ESP_WML_LOGINFO(F("clearForcedCP"));
 
+      EEPROM.begin(EEPROM_SIZE);
       EEPROM.put(CONFIG_EEPROM_START + CONFIG_DATA_SIZE, 0);
-      EEPROM.commit();
+      EEPROM.end();
     }
 
     //////////////////////////////////////////////
 
+    // Is ConfigPortal forced? EEPROM must be started before using EEPROM.begin()!
     bool isForcedCP()
     {
       uint32_t readForcedConfigPortalFlag;
@@ -2251,72 +2178,36 @@ class ESP_WiFiManager_Lite
 
 #if USE_DYNAMIC_PARAMETERS
 
-    bool checkDynamicData()
+    // Get DynamicData from EEPROM buffer. EEPROM must be started before using EEPROM.begin()!
+    // Return true if checksum matches and data are read.
+    bool EEPROM_getDynamicData()
     {
-      int checkSum = 0;
+      if (hadDynamicData)
+      {
+        return true;
+      }
+
       int readCheckSum;
-
-#define BUFFER_LEN      128
-      char readBuffer[BUFFER_LEN + 1];
-
+      int checkSum = 0;
       uint16_t offset = CONFIG_EEPROM_START + sizeof(ESP_WM_LITE_config) + FORCED_CONFIG_PORTAL_FLAG_DATA_SIZE;
 
-      // Find the longest pdata, then dynamically allocate buffer. Remember to free when done
-      // This is used to store tempo data to calculate checksum to see of data is valid
-      // We dont like to destroy myMenuItems[i].pdata with invalid data
-
+      // calculate ckecksum first, before overwriting myMenuItems buffer
       for (uint16_t i = 0; i < NUM_MENU_ITEMS; i++)
       {
-        if (myMenuItems[i].maxlen > BUFFER_LEN)
+        for (uint16_t j = 0; j < myMenuItems[i].maxlen; j++, offset++)
         {
-          // Size too large, abort and flag false
-          ESP_WML_LOGERROR(F("ChkCrR: Error Small Buffer."));
-          return false;
+          checkSum += EEPROM.read(offset);
         }
       }
-
-      for (uint16_t i = 0; i < NUM_MENU_ITEMS; i++)
-      {
-        char* _pointer = readBuffer;
-
-        // Prepare buffer, more than enough
-        memset(readBuffer, 0, sizeof(readBuffer));
-
-        // Read more than necessary, but OK and easier to code
-        EEPROM.get(offset, readBuffer);
-        // NULL terminated
-        readBuffer[myMenuItems[i].maxlen] = 0;
-
-        ESP_WML_LOGDEBUG3(F("ChkCrR:pdata="), readBuffer, F(",len="), myMenuItems[i].maxlen);
-
-        for (uint16_t j = 0; j < myMenuItems[i].maxlen; j++, _pointer++)
-        {
-          checkSum += *_pointer;
-        }
-
-        offset += myMenuItems[i].maxlen;
-      }
-
       EEPROM.get(offset, readCheckSum);
+      ESP_WML_LOGINFO3(F("CrR:CCsum=0x"), String(checkSum, HEX), F(",CrR:RCsum=0x"), String(readCheckSum, HEX));
 
-      ESP_WML_LOGINFO3(F("ChkCrR:CrCCsum=0x"), String(checkSum, HEX), F(",CrRCsum=0x"), String(readCheckSum, HEX));
-
-      if ( checkSum != readCheckSum)
+      if (checkSum != readCheckSum)
       {
         return false;
       }
 
-      return true;
-    }
-
-    //////////////////////////////////////////////
-
-    bool EEPROM_getDynamicData()
-    {
-      int readCheckSum;
-      int checkSum = 0;
-      uint16_t offset = CONFIG_EEPROM_START + sizeof(ESP_WM_LITE_config) + FORCED_CONFIG_PORTAL_FLAG_DATA_SIZE;
-
+      offset = CONFIG_EEPROM_START + sizeof(ESP_WM_LITE_config) + FORCED_CONFIG_PORTAL_FLAG_DATA_SIZE;
       totalDataSize = sizeof(ESP_WM_LITE_config) + sizeof(readCheckSum);
 
       for (uint16_t i = 0; i < NUM_MENU_ITEMS; i++)
@@ -2330,27 +2221,18 @@ class ESP_WiFiManager_Lite
         for (uint16_t j = 0; j < myMenuItems[i].maxlen; j++, _pointer++, offset++)
         {
           *_pointer = EEPROM.read(offset);
-
-          checkSum += *_pointer;
         }
 
-        ESP_WML_LOGDEBUG3(F("CR:pdata="), myMenuItems[i].pdata, F(",len="), myMenuItems[i].maxlen);
+        ESP_WML_LOGDEBUG3(F("CrR:pdata="), myMenuItems[i].pdata, F(",len="), myMenuItems[i].maxlen);
       }
 
-      EEPROM.get(offset, readCheckSum);
-
-      ESP_WML_LOGINFO3(F("CrCCsum=0x"), String(checkSum, HEX), F(",CrRCsum=0x"), String(readCheckSum, HEX));
-
-      if ( checkSum != readCheckSum)
-      {
-        return false;
-      }
-
+      hadDynamicData = true;
       return true;
     }
 
     //////////////////////////////////////////////
 
+    // Put DynamicData into EEPROM buffer, but do not commit. EEPROM must be started before using EEPROM.begin()!
     void EEPROM_putDynamicData()
     {
       int checkSum = 0;
@@ -2359,21 +2241,17 @@ class ESP_WiFiManager_Lite
       for (uint16_t i = 0; i < NUM_MENU_ITEMS; i++)
       {
         char* _pointer = myMenuItems[i].pdata;
-
-        ESP_WML_LOGDEBUG3(F("CW:pdata="), myMenuItems[i].pdata, F(",len="), myMenuItems[i].maxlen);
+        ESP_WML_LOGDEBUG3(F("CrW:pdata="), myMenuItems[i].pdata, F(",len="), myMenuItems[i].maxlen);
 
         for (uint16_t j = 0; j < myMenuItems[i].maxlen; j++, _pointer++, offset++)
         {
           EEPROM.write(offset, *_pointer);
-
           checkSum += *_pointer;
         }
       }
 
       EEPROM.put(offset, checkSum);
-      //EEPROM.commit();
-
-      ESP_WML_LOGINFO1(F("CrWCSum=0x"), String(checkSum, HEX));
+      ESP_WML_LOGINFO1(F("CrW:CSum=0x"), String(checkSum, HEX));
     }
 #endif
 
@@ -2385,9 +2263,9 @@ class ESP_WiFiManager_Lite
       ESP_WM_LITE_config.checkSum = calChecksum;
       ESP_WML_LOGINFO3(F("SaveEEPROM,sz="), EEPROM_SIZE, F(",CSum=0x"), String(calChecksum, HEX))
 
+      EEPROM.begin(EEPROM_SIZE);
       EEPROM.put(CONFIG_EEPROM_START, ESP_WM_LITE_config);
-
-      EEPROM.commit();
+      EEPROM.end();
     }
 
     //////////////////////////////////////////////
@@ -2398,13 +2276,12 @@ class ESP_WiFiManager_Lite
       ESP_WM_LITE_config.checkSum = calChecksum;
       ESP_WML_LOGINFO3(F("SaveEEPROM,sz="), EEPROM_SIZE, F(",CSum=0x"), String(calChecksum, HEX))
 
+      EEPROM.begin(EEPROM_SIZE);
       EEPROM.put(CONFIG_EEPROM_START, ESP_WM_LITE_config);
-
 #if USE_DYNAMIC_PARAMETERS
       EEPROM_putDynamicData();
 #endif
-
-      EEPROM.commit();
+      EEPROM.end();
     }
 
     //////////////////////////////////////////////
@@ -2416,7 +2293,7 @@ class ESP_WiFiManager_Lite
       strcpy(ESP_WM_LITE_config.header, ESP_WM_LITE_BOARD_TYPE);
 
       // Including config and dynamic data, and assume valid
-      saveConfigData();
+      saveAllConfigData();
 
       ESP_WML_LOGINFO(F("======= Start Loaded Config Data ======="));
       displayConfigData(ESP_WM_LITE_config);
@@ -2431,32 +2308,28 @@ class ESP_WiFiManager_Lite
 
       hadConfigData = false;
 
-      EEPROM.begin(EEPROM_SIZE);
-      ESP_WML_LOGINFO1(F("EEPROMsz:"), EEPROM_SIZE);
-
       if (LOAD_DEFAULT_CONFIG_DATA)
       {
-        // Load Config Data from Sketch
-        memcpy(&ESP_WM_LITE_config, &defaultConfig, sizeof(ESP_WM_LITE_config));
-        strcpy(ESP_WM_LITE_config.header, ESP_WM_LITE_BOARD_TYPE);
-
-        // Including config and dynamic data, and assume valid
-        saveAllConfigData();
-
-        ESP_WML_LOGINFO(F("======= Start Loaded Config Data ======="));
-        displayConfigData(ESP_WM_LITE_config);
-
+        loadAndSaveDefaultConfigData();
         // Don't need Config Portal anymore
         return true;
       }
       else
       {
+        EEPROM.begin(EEPROM_SIZE);
+        ESP_WML_LOGINFO1(F("EEPROMsz:"), EEPROM_SIZE);
         // Load data from EEPROM
         EEPROM.get(CONFIG_EEPROM_START, ESP_WM_LITE_config);
+#if USE_DYNAMIC_PARAMETERS
+        // Load dynamic data from EEPROM
+        dynamicDataValid = EEPROM_getDynamicData();
+#endif
+        isForcedConfigPortal = isForcedCP();
+        EEPROM.end();
 
         if ( !isWiFiConfigValid() )
         {
-          // If SSID, PW ="blank" or NULL, stay in config mode forever until having config Data.
+          // If SSID, PW = "blank" or NULL, stay in config mode forever until having config Data.
           return false;
         }
 
@@ -2464,15 +2337,10 @@ class ESP_WiFiManager_Lite
         displayConfigData(ESP_WM_LITE_config);
 
         calChecksum = calcChecksum();
-
         ESP_WML_LOGINFO3(F("CCSum=0x"), String(calChecksum, HEX),
                          F(",RCSum=0x"), String(ESP_WM_LITE_config.checkSum, HEX));
 
 #if USE_DYNAMIC_PARAMETERS
-
-        // Load dynamic data from EEPROM
-        dynamicDataValid = EEPROM_getDynamicData();
-
         if (dynamicDataValid)
         {
           ESP_WML_LOGINFO(F("Valid Stored Dynamic Data"));
@@ -2481,7 +2349,6 @@ class ESP_WiFiManager_Lite
         {
           ESP_WML_LOGINFO(F("Invalid Stored Dynamic Data. Ignored"));
         }
-
 #endif
       }
 
@@ -2505,29 +2372,9 @@ class ESP_WiFiManager_Lite
           strcpy(ESP_WM_LITE_config.WiFi_Creds[1].wifi_ssid,   WM_NO_CONFIG);
           strcpy(ESP_WM_LITE_config.WiFi_Creds[1].wifi_pw,     WM_NO_CONFIG);
           strcpy(ESP_WM_LITE_config.board_name, WM_NO_CONFIG);
-
-#if USE_DYNAMIC_PARAMETERS
-
-          for (uint16_t i = 0; i < NUM_MENU_ITEMS; i++)
-          {
-            // Actual size of pdata is [maxlen + 1]
-            memset(myMenuItems[i].pdata, 0, myMenuItems[i].maxlen + 1);
-            strncpy(myMenuItems[i].pdata, WM_NO_CONFIG, myMenuItems[i].maxlen);
-          }
-
-#endif
         }
 
         strcpy(ESP_WM_LITE_config.header, ESP_WM_LITE_BOARD_TYPE);
-
-#if USE_DYNAMIC_PARAMETERS
-
-        for (uint16_t i = 0; i < NUM_MENU_ITEMS; i++)
-        {
-          ESP_WML_LOGDEBUG3(F("g:myMenuItems["), i, F("]="), myMenuItems[i].pdata );
-        }
-
-#endif
 
         saveAllConfigData();
         displayConfigData(ESP_WM_LITE_config);
@@ -2536,7 +2383,7 @@ class ESP_WiFiManager_Lite
       }
       else if ( !isWiFiConfigValid() )
       {
-        // If SSID, PW ="blank" or NULL, stay in config mode forever until having config Data.
+        // If SSID, PW = "blank" or NULL, stay in config mode forever until having config Data.
         return false;
       }
 
@@ -2638,26 +2485,21 @@ class ESP_WiFiManager_Lite
       root_html_template = FPSTR(ESP_WM_LITE_HTML_HEAD_START);
 
 #if USING_CUSTOMS_STYLE
-
       // Using Customs style when not NULL
       if (_CustomsHeadStyle)
         root_html_template += FPSTR(_CustomsHeadStyle);
       else
         root_html_template += FPSTR(ESP_WM_LITE_HTML_HEAD_STYLE);
-
 #else
       root_html_template += FPSTR(ESP_WM_LITE_HTML_HEAD_STYLE);
 #endif
 
 #if USING_CUSTOMS_HEAD_ELEMENT
-
       if (_CustomsHeadElement)
         root_html_template += _CustomsHeadElement;
-
 #endif
 
 #if SCAN_WIFI_NETWORKS
-
       ESP_WML_LOGDEBUG1(WiFiNetworksFound, F(" SSIDs found, generating HTML now"));
       // Replace HTML <input...> with <select...>, based on WiFi network scan in startConfigurationMode()
 
@@ -2680,56 +2522,46 @@ class ESP_WiFiManager_Lite
       pitem = FPSTR(ESP_WM_LITE_HTML_HEAD_END);
 
 #if MANUAL_SSID_INPUT_ALLOWED
-      pitem.replace("[[input_id]]",  "<input id='id' list='SSIDs'>"  + String(FPSTR(ESP_WM_LITE_DATALIST_START)) + "'SSIDs'>" +
+      pitem.replace(F("[[input_id]]"),  F("<input id='id' list='SSIDs'>")  + String(FPSTR(ESP_WM_LITE_DATALIST_START)) + F("'SSIDs'>") +
                     ListOfSSIDs + FPSTR(ESP_WM_LITE_DATALIST_END));
       ESP_WML_LOGDEBUG1(F("pitem:"), pitem);
-      pitem.replace("[[input_id1]]", "<input id='id1' list='SSIDs'>" + String(FPSTR(ESP_WM_LITE_DATALIST_START)) + "'SSIDs'>" +
+      pitem.replace(F("[[input_id1]]"), F("<input id='id1' list='SSIDs'>") + String(FPSTR(ESP_WM_LITE_DATALIST_START)) + F("'SSIDs'>") +
                     ListOfSSIDs + FPSTR(ESP_WM_LITE_DATALIST_END));
       ESP_WML_LOGDEBUG1(F("pitem:"), pitem);
 #else
-      pitem.replace("[[input_id]]",  "<select id='id'>"  + ListOfSSIDs + FPSTR(ESP_WM_LITE_SELECT_END));
-      pitem.replace("[[input_id1]]", "<select id='id1'>" + ListOfSSIDs + FPSTR(ESP_WM_LITE_SELECT_END));
+      pitem.replace(F("[[input_id]]"),  F("<select id='id'>")  + ListOfSSIDs + String(FPSTR(ESP_WM_LITE_SELECT_END)));
+      pitem.replace(F("[[input_id1]]"), F("<select id='id1'>") + ListOfSSIDs + String(FPSTR(ESP_WM_LITE_SELECT_END)));
 #endif
 
       root_html_template += pitem + FPSTR(ESP_WM_LITE_FLDSET_START);
 
 #else
-
       pitem = FPSTR(ESP_WM_LITE_HTML_HEAD_END);
-      pitem.replace("[[input_id]]",  FPSTR(ESP_WM_LITE_HTML_INPUT_ID));
-      pitem.replace("[[input_id1]]", FPSTR(ESP_WM_LITE_HTML_INPUT_ID1));
+      pitem.replace(F("[[input_id]]"),  FPSTR(ESP_WM_LITE_HTML_INPUT_ID));
+      pitem.replace(F("[[input_id1]]"), FPSTR(ESP_WM_LITE_HTML_INPUT_ID1));
       root_html_template += pitem + FPSTR(ESP_WM_LITE_FLDSET_START);
-
 #endif    // SCAN_WIFI_NETWORKS
 
 #if USE_DYNAMIC_PARAMETERS
-
       for (uint16_t i = 0; i < NUM_MENU_ITEMS; i++)
       {
         pitem = FPSTR(ESP_WM_LITE_HTML_PARAM);
-
         pitem.replace("{b}", myMenuItems[i].displayName);
         pitem.replace("{v}", myMenuItems[i].id);
         pitem.replace("{i}", myMenuItems[i].id);
-
         root_html_template += pitem;
       }
-
 #endif
 
       root_html_template += String(FPSTR(ESP_WM_LITE_FLDSET_END)) + FPSTR(ESP_WM_LITE_HTML_BUTTON) + FPSTR(ESP_WM_LITE_HTML_SCRIPT);
 
 #if USE_DYNAMIC_PARAMETERS
-
       for (uint16_t i = 0; i < NUM_MENU_ITEMS; i++)
       {
         pitem = FPSTR(ESP_WM_LITE_HTML_SCRIPT_ITEM);
-
         pitem.replace("{d}", myMenuItems[i].id);
-
         root_html_template += pitem;
       }
-
 #endif
 
       root_html_template += String(FPSTR(ESP_WM_LITE_HTML_SCRIPT_END)) + FPSTR(ESP_WM_LITE_HTML_END);
