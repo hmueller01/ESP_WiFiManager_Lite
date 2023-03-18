@@ -2522,10 +2522,10 @@ class ESP_WiFiManager_Lite
       pitem = FPSTR(ESP_WM_LITE_HTML_HEAD_END);
 
 #if MANUAL_SSID_INPUT_ALLOWED
-      pitem.replace("[[input_id]]",  "<input id='id' list='SSIDs'>"  + String(FPSTR(ESP_WM_LITE_DATALIST_START)) + "'SSIDs'>" +
+      pitem.replace(F("[[input_id]]"),  F("<input id='id' list='SSIDs'>")  + String(FPSTR(ESP_WM_LITE_DATALIST_START)) + F("'SSIDs'>") +
                     ListOfSSIDs + FPSTR(ESP_WM_LITE_DATALIST_END));
       ESP_WML_LOGDEBUG1(F("pitem:"), pitem);
-      pitem.replace("[[input_id1]]", "<input id='id1' list='SSIDs'>" + String(FPSTR(ESP_WM_LITE_DATALIST_START)) + "'SSIDs'>" +
+      pitem.replace(F("[[input_id1]]"), F("<input id='id1' list='SSIDs'>") + String(FPSTR(ESP_WM_LITE_DATALIST_START)) + F("'SSIDs'>") +
                     ListOfSSIDs + FPSTR(ESP_WM_LITE_DATALIST_END));
       ESP_WML_LOGDEBUG1(F("pitem:"), pitem);
 #else
@@ -2537,8 +2537,8 @@ class ESP_WiFiManager_Lite
 
 #else
       pitem = FPSTR(ESP_WM_LITE_HTML_HEAD_END);
-      pitem.replace("[[input_id]]",  FPSTR(ESP_WM_LITE_HTML_INPUT_ID));
-      pitem.replace("[[input_id1]]", FPSTR(ESP_WM_LITE_HTML_INPUT_ID1));
+      pitem.replace(F("[[input_id]]"),  FPSTR(ESP_WM_LITE_HTML_INPUT_ID));
+      pitem.replace(F("[[input_id1]]"), FPSTR(ESP_WM_LITE_HTML_INPUT_ID1));
       root_html_template += pitem + FPSTR(ESP_WM_LITE_FLDSET_START);
 #endif    // SCAN_WIFI_NETWORKS
 
