@@ -397,7 +397,7 @@ typedef struct
   #define NUM_CONFIGURABLE_ITEMS    ( ( 2 * NUM_WIFI_CREDENTIALS ) + 1 )
 #else
   // Configurable items besides fixed Header, just add board_name
-  #define NUM_CONFIGURABLE_ITEMS    ( ( 2 * NUM_WIFI_CREDENTIALS ))
+  #define NUM_CONFIGURABLE_ITEMS    ( ( 2 * NUM_WIFI_CREDENTIALS ) )
 #endif
 
 ///////////////////////////////////////////
@@ -407,10 +407,10 @@ typedef struct
 
 typedef struct Configuration
 {
-  char header         [HEADER_MAX_LEN];
-  WiFi_Credentials  WiFi_Creds  [NUM_WIFI_CREDENTIALS];
-  char board_name     [BOARD_NAME_MAX_LEN];
-  int  checkSum;
+  char             header[HEADER_MAX_LEN];
+  WiFi_Credentials WiFi_Creds[NUM_WIFI_CREDENTIALS];
+  char             board_name[BOARD_NAME_MAX_LEN];
+  int              checkSum;
 } ESP_WM_LITE_Configuration;
 
 // Currently CONFIG_DATA_SIZE  =   236  = (16 + 96 * 2 + 4 + 24)
@@ -425,13 +425,13 @@ extern ESP_WM_LITE_Configuration defaultConfig;
 
 // -- HTML page fragments
 
-const char ESP_WM_LITE_HTML_HEAD_START[] PROGMEM = "<!DOCTYPE html><html><head><title>ESP_WM_LITE</title><meta name='viewport' content='width=device-width, initial-scale=1'>";
+const char ESP_WML_HTML_HEAD_START[] PROGMEM = "<!DOCTYPE html><html><head><title>ESP_WM_LITE</title><meta name='viewport' content='width=device-width, initial-scale=1'>";
 
-const char ESP_WM_LITE_HTML_HEAD_STYLE[] PROGMEM =
+const char ESP_WML_HTML_HEAD_STYLE[] PROGMEM =
   "<style>div,input{padding:5px;font-size:1em;}input{width:95%;}body{text-align: center;}button{background-color:#16A1E7;color:#fff;line-height:2.4rem;font-size:1.2rem;width:100%;}fieldset{border-radius:0.3rem;margin:0px;}</style>";
 
 #if USING_BOARD_NAME
-  const char ESP_WM_LITE_HTML_HEAD_END[]   PROGMEM =
+  const char ESP_WML_HTML_HEAD_END[]   PROGMEM =
   "</head><div style='text-align:left;display:inline-block;min-width:260px;'>\
   <fieldset><div><label>*WiFi SSID</label><div>[[input_id]]</div></div>\
   <div><label>*PWD (8+ chars)</label><input value='[[pw]]' id='pw'><div></div></div>\
@@ -439,7 +439,7 @@ const char ESP_WM_LITE_HTML_HEAD_STYLE[] PROGMEM =
   <div><label>*PWD1 (8+ chars)</label><input value='[[pw1]]' id='pw1'><div></div></div></fieldset>\
   <fieldset><div><label>Board Name</label><input value='[[nm]]' id='nm'><div></div></div></fieldset>";  // DO NOT CHANGE THIS STRING EVER!!!!
 #else
-  const char ESP_WM_LITE_HTML_HEAD_END[]   PROGMEM =
+  const char ESP_WML_HTML_HEAD_END[]   PROGMEM =
   "</head><div style='text-align:left;display:inline-block;min-width:260px;'>\
   <fieldset><div><label>*WiFi SSID</label><div>[[input_id]]</div></div>\
   <div><label>*PWD (8+ chars)</label><input value='[[pw]]' id='pw'><div></div></div>\
@@ -447,57 +447,57 @@ const char ESP_WM_LITE_HTML_HEAD_STYLE[] PROGMEM =
   <div><label>*PWD1 (8+ chars)</label><input value='[[pw1]]' id='pw1'><div></div></div></fieldset>";  // DO NOT CHANGE THIS STRING EVER!!!!
 #endif
 
-const char ESP_WM_LITE_HTML_INPUT_ID[]   PROGMEM = "<input value='[[id]]' id='id'>";
-const char ESP_WM_LITE_HTML_INPUT_ID1[]  PROGMEM = "<input value='[[id1]]' id='id1'>";
+const char ESP_WML_HTML_INPUT_ID[]   PROGMEM = "<input value='[[id]]' id='id'>";
+const char ESP_WML_HTML_INPUT_ID1[]  PROGMEM = "<input value='[[id1]]' id='id1'>";
 
-const char ESP_WM_LITE_FLDSET_START[]  PROGMEM = "<fieldset>";
-const char ESP_WM_LITE_FLDSET_END[]    PROGMEM = "</fieldset>";
-const char ESP_WM_LITE_HTML_PARAM[]    PROGMEM =
+const char ESP_WML_FLDSET_START[]  PROGMEM = "<fieldset>";
+const char ESP_WML_FLDSET_END[]    PROGMEM = "</fieldset>";
+const char ESP_WML_HTML_PARAM[]    PROGMEM =
   "<div><label>{b}</label><input value='[[{v}]]'id='{i}'><div></div></div>";
-const char ESP_WM_LITE_HTML_BUTTON[]   PROGMEM = "<button onclick=\"sv()\">Save</button></div>";
+const char ESP_WML_HTML_BUTTON[]   PROGMEM = "<button onclick=\"sv()\">Save</button></div>";
 
 #if USING_BOARD_NAME
-  const char ESP_WM_LITE_HTML_SCRIPT[]   PROGMEM = "<script id=\"jsbin-javascript\">\
+  const char ESP_WML_HTML_SCRIPT[]   PROGMEM = "<script id=\"jsbin-javascript\">\
   function udVal(key,val){var request=new XMLHttpRequest();var url='/?key='+key+'&value='+encodeURIComponent(val);\
   request.open('GET',url,false);request.send(null);}\
   function sv(){udVal('id',document.getElementById('id').value);udVal('pw',document.getElementById('pw').value);\
   udVal('id1',document.getElementById('id1').value);udVal('pw1',document.getElementById('pw1').value);\
   udVal('nm',document.getElementById('nm').value);";
 #else
-  const char ESP_WM_LITE_HTML_SCRIPT[]   PROGMEM = "<script id=\"jsbin-javascript\">\
+  const char ESP_WML_HTML_SCRIPT[]   PROGMEM = "<script id=\"jsbin-javascript\">\
   function udVal(key,val){var request=new XMLHttpRequest();var url='/?key='+key+'&value='+encodeURIComponent(val);\
   request.open('GET',url,false);request.send(null);}\
   function sv(){udVal('id',document.getElementById('id').value);udVal('pw',document.getElementById('pw').value);\
   udVal('id1',document.getElementById('id1').value);udVal('pw1',document.getElementById('pw1').value);";
 #endif
 
-const char ESP_WM_LITE_HTML_SCRIPT_ITEM[]  PROGMEM = "udVal('{d}',document.getElementById('{d}').value);";
-const char ESP_WM_LITE_HTML_SCRIPT_END[]   PROGMEM = "alert('Updated');}</script>";
-const char ESP_WM_LITE_HTML_END[]          PROGMEM = "</html>";
+const char ESP_WML_HTML_SCRIPT_ITEM[]  PROGMEM = "udVal('{d}',document.getElementById('{d}').value);";
+const char ESP_WML_HTML_SCRIPT_END[]   PROGMEM = "alert('Updated');}</script>";
+const char ESP_WML_HTML_END[]          PROGMEM = "</html>";
 
 #if SCAN_WIFI_NETWORKS
-  const char ESP_WM_LITE_SELECT_START[]      PROGMEM = "<select id=";
-  const char ESP_WM_LITE_SELECT_END[]        PROGMEM = "</select>";
-  const char ESP_WM_LITE_DATALIST_START[]    PROGMEM = "<datalist id=";
-  const char ESP_WM_LITE_DATALIST_END[]      PROGMEM = "</datalist>";
-  const char ESP_WM_LITE_OPTION_START[]      PROGMEM = "<option>";
-  const char ESP_WM_LITE_OPTION_END[]        PROGMEM = "";      // "</option>"; is not required
-  const char ESP_WM_LITE_NO_NETWORKS_FOUND[] PROGMEM = "No suitable WiFi networks available!";
+  const char ESP_WML_SELECT_START[]      PROGMEM = "<select id=";
+  const char ESP_WML_SELECT_END[]        PROGMEM = "</select>";
+  const char ESP_WML_DATALIST_START[]    PROGMEM = "<datalist id=";
+  const char ESP_WML_DATALIST_END[]      PROGMEM = "</datalist>";
+  const char ESP_WML_OPTION_START[]      PROGMEM = "<option>";
+  const char ESP_WML_OPTION_END[]        PROGMEM = "";      // "</option>"; is not required
+  const char ESP_WML_NO_NETWORKS_FOUND[] PROGMEM = "No suitable WiFi networks available!";
 #endif
 
 //////////////////////////////////////////
 
-const char WM_HTTP_HEAD_CL[]         PROGMEM = "Content-Length";
-const char WM_HTTP_HEAD_TEXT_HTML[]  PROGMEM = "text/html";
-const char WM_HTTP_HEAD_TEXT_PLAIN[] PROGMEM = "text/plain";
+const char ESP_WML_HTTP_HEAD_CL[]         PROGMEM = "Content-Length";
+const char ESP_WML_HTTP_HEAD_TEXT_HTML[]  PROGMEM = "text/html";
+const char ESP_WML_HTTP_HEAD_TEXT_PLAIN[] PROGMEM = "text/plain";
 
-const char WM_HTTP_CACHE_CONTROL[]   PROGMEM = "Cache-Control";
-const char WM_HTTP_NO_STORE[]        PROGMEM = "no-cache, no-store, must-revalidate";
-const char WM_HTTP_PRAGMA[]          PROGMEM = "Pragma";
-const char WM_HTTP_NO_CACHE[]        PROGMEM = "no-cache";
-const char WM_HTTP_EXPIRES[]         PROGMEM = "Expires";
-const char WM_HTTP_CORS[]            PROGMEM = "Access-Control-Allow-Origin";
-const char WM_HTTP_CORS_ALLOW_ALL[]  PROGMEM = "*";
+const char ESP_WML_HTTP_CACHE_CONTROL[]   PROGMEM = "Cache-Control";
+const char ESP_WML_HTTP_NO_STORE[]        PROGMEM = "no-cache, no-store, must-revalidate";
+const char ESP_WML_HTTP_PRAGMA[]          PROGMEM = "Pragma";
+const char ESP_WML_HTTP_NO_CACHE[]        PROGMEM = "no-cache";
+const char ESP_WML_HTTP_EXPIRES[]         PROGMEM = "Expires";
+const char ESP_WML_HTTP_CORS[]            PROGMEM = "Access-Control-Allow-Origin";
+const char ESP_WML_HTTP_CORS_ALLOW_ALL[]  PROGMEM = "*";
 
 //////////////////////////////////////////
 
@@ -729,15 +729,15 @@ class ESP_WiFiManager_Lite
 
         for (uint16_t i = 0; i < NUM_WIFI_CREDENTIALS; i++)
         {
-          if ( strlen(ESP_WM_LITE_config.WiFi_Creds[i].wifi_pw) >= PASSWORD_MIN_LEN )
+          if ( strlen(ESP_WML_config.WiFi_Creds[i].wifi_pw) >= PASSWORD_MIN_LEN )
           {
-            ESP_WML_LOGDEBUG5(F("bg: addAP : index="), i, F(", SSID="), ESP_WM_LITE_config.WiFi_Creds[i].wifi_ssid, F(", PWD="),
-                              ESP_WM_LITE_config.WiFi_Creds[i].wifi_pw);
-            wifiMulti.addAP(ESP_WM_LITE_config.WiFi_Creds[i].wifi_ssid, ESP_WM_LITE_config.WiFi_Creds[i].wifi_pw);
+            ESP_WML_LOGDEBUG5(F("bg: addAP : index="), i, F(", SSID="), ESP_WML_config.WiFi_Creds[i].wifi_ssid, F(", PWD="),
+                              ESP_WML_config.WiFi_Creds[i].wifi_pw);
+            wifiMulti.addAP(ESP_WML_config.WiFi_Creds[i].wifi_ssid, ESP_WML_config.WiFi_Creds[i].wifi_pw);
           }
           else
           {
-            ESP_WML_LOGWARN3(F("bg: Ignore invalid WiFi PWD : index="), i, F(", PWD="), ESP_WM_LITE_config.WiFi_Creds[i].wifi_pw);
+            ESP_WML_LOGWARN3(F("bg: Ignore invalid WiFi PWD : index="), i, F(", PWD="), ESP_WML_config.WiFi_Creds[i].wifi_pw);
           }
         }
 
@@ -1111,7 +1111,7 @@ class ESP_WiFiManager_Lite
       if (!hadConfigData)
         getConfigData();
 
-      return (String(ESP_WM_LITE_config.WiFi_Creds[index].wifi_ssid));
+      return (String(ESP_WML_config.WiFi_Creds[index].wifi_ssid));
     }
 
     //////////////////////////////////////////////
@@ -1124,7 +1124,7 @@ class ESP_WiFiManager_Lite
       if (!hadConfigData)
         getConfigData();
 
-      return (String(ESP_WM_LITE_config.WiFi_Creds[index].wifi_pw));
+      return (String(ESP_WML_config.WiFi_Creds[index].wifi_pw));
     }
 
     //////////////////////////////////////////////
@@ -1134,7 +1134,7 @@ class ESP_WiFiManager_Lite
       if (!hadConfigData)
         getConfigData();
 
-      return (String(ESP_WM_LITE_config.board_name));
+      return (String(ESP_WML_config.board_name));
     }
 
     //////////////////////////////////////////////
@@ -1153,7 +1153,7 @@ class ESP_WiFiManager_Lite
 
       // Check if NULL pointer
       if (configData)
-        memcpy(configData, &ESP_WM_LITE_config, sizeof(ESP_WM_LITE_Configuration));
+        memcpy(configData, &ESP_WML_config, sizeof(ESP_WM_LITE_Configuration));
 
       return (configData);
     }
@@ -1171,7 +1171,7 @@ class ESP_WiFiManager_Lite
 
     void clearConfigData()
     {
-      memset(&ESP_WM_LITE_config, 0, sizeof(ESP_WM_LITE_config));
+      memset(&ESP_WML_config, 0, sizeof(ESP_WML_config));
 
 #if USE_DYNAMIC_PARAMETERS
       for (uint16_t i = 0; i < NUM_MENU_ITEMS; i++)
@@ -1248,7 +1248,7 @@ class ESP_WiFiManager_Lite
 
     // Add customs headers from v1.2.0
 
-    // New from v1.2.0, for configure CORS Header, default to WM_HTTP_CORS_ALLOW_ALL = "*"
+    // New from v1.2.0, for configure CORS Header, default to ESP_WML_HTTP_CORS_ALLOW_ALL = "*"
 
 #if USING_CUSTOMS_STYLE
     //sets a custom style, such as color
@@ -1256,7 +1256,7 @@ class ESP_WiFiManager_Lite
     // input{width:95%;}body{text-align: center;}
     // button{background-color:#16A1E7;color:#fff;line-height:2.4rem;font-size:1.2rem;width:100%;}
     // fieldset{border-radius:0.3rem;margin:0px;}</style>";
-    void setCustomsStyle(PGM_P CustomsStyle = ESP_WM_LITE_HTML_HEAD_STYLE)
+    void setCustomsStyle(PGM_P CustomsStyle = ESP_WML_HTML_HEAD_STYLE)
     {
       _CustomsHeadStyle = CustomsStyle;
       ESP_WML_LOGDEBUG1(F("Set CustomsStyle to : "), FPSTR(_CustomsHeadStyle));
@@ -1396,7 +1396,7 @@ class ESP_WiFiManager_Lite
     bool isForcedConfigPortal   = false;
     bool persForcedConfigPortal = false;
 
-    ESP_WM_LITE_Configuration ESP_WM_LITE_config;
+    ESP_WM_LITE_Configuration ESP_WML_config;
 
     uint16_t totalDataSize = 0;
 
@@ -1428,7 +1428,7 @@ class ESP_WiFiManager_Lite
 #endif
 
 #if USING_CORS_FEATURE
-    PGM_P _CORS_Header = WM_HTTP_CORS_ALLOW_ALL;   // "*";
+    PGM_P _CORS_Header = ESP_WML_HTTP_CORS_ALLOW_ALL;   // "*";
 #endif
 
     //////////////////////////////////////
@@ -1504,16 +1504,16 @@ class ESP_WiFiManager_Lite
 
     //////////////////////////////////////
 
-#define ESP_WM_LITE_BOARD_TYPE   "ESP_WM_LITE"
-#define WM_NO_CONFIG             "blank"
+#define ESP_WML_BOARD_TYPE   "ESP_WM_LITE"
+#define ESP_WML_NO_CONFIG    "blank"
 
     int calcChecksum()
     {
       int checkSum = 0;
 
-      for (uint16_t index = 0; index < (sizeof(ESP_WM_LITE_config) - sizeof(ESP_WM_LITE_config.checkSum)); index++)
+      for (uint16_t index = 0; index < (sizeof(ESP_WML_config) - sizeof(ESP_WML_config.checkSum)); index++)
       {
-        checkSum += * ( ( (byte*) &ESP_WM_LITE_config ) + index);
+        checkSum += * ( ( (byte*) &ESP_WML_config ) + index);
       }
 
       return checkSum;
@@ -1527,31 +1527,31 @@ class ESP_WiFiManager_Lite
 
       // If SSID = "blank" or NULL, or PWD length < 8 (as required by standard) => return false
       // Only need 1 set of valid SSID/PWD
-      if (!( ( strncmp(ESP_WM_LITE_config.WiFi_Creds[0].wifi_ssid, WM_NO_CONFIG, strlen(WM_NO_CONFIG)) &&
-               ( strlen(ESP_WM_LITE_config.WiFi_Creds[0].wifi_ssid) >  0 ) ) &&
-               ( strlen(ESP_WM_LITE_config.WiFi_Creds[0].wifi_pw) >= PASSWORD_MIN_LEN ) ) ||
-             ( strncmp(ESP_WM_LITE_config.WiFi_Creds[1].wifi_ssid, WM_NO_CONFIG, strlen(WM_NO_CONFIG)) &&
-               ( strlen(ESP_WM_LITE_config.WiFi_Creds[1].wifi_ssid) >  0 )  &&
-               ( strlen(ESP_WM_LITE_config.WiFi_Creds[1].wifi_pw) >= PASSWORD_MIN_LEN ) ) )
+      if (!( ( strncmp(ESP_WML_config.WiFi_Creds[0].wifi_ssid, ESP_WML_NO_CONFIG, strlen(ESP_WML_NO_CONFIG)) &&
+               ( strlen(ESP_WML_config.WiFi_Creds[0].wifi_ssid) >  0 ) ) &&
+               ( strlen(ESP_WML_config.WiFi_Creds[0].wifi_pw) >= PASSWORD_MIN_LEN ) ) ||
+             ( strncmp(ESP_WML_config.WiFi_Creds[1].wifi_ssid, ESP_WML_NO_CONFIG, strlen(ESP_WML_NO_CONFIG)) &&
+               ( strlen(ESP_WML_config.WiFi_Creds[1].wifi_ssid) >  0 )  &&
+               ( strlen(ESP_WML_config.WiFi_Creds[1].wifi_pw) >= PASSWORD_MIN_LEN ) ) )
 #else
 
       // If SSID = "blank" or NULL, or PWD length < 8 (as required by standard) => invalid set
       // Need both sets of valid SSID/PWD
-      if ( !strncmp(ESP_WM_LITE_config.WiFi_Creds[0].wifi_ssid,   WM_NO_CONFIG, strlen(WM_NO_CONFIG))  ||
-           !strncmp(ESP_WM_LITE_config.WiFi_Creds[0].wifi_pw,     WM_NO_CONFIG, strlen(WM_NO_CONFIG))  ||
-           !strncmp(ESP_WM_LITE_config.WiFi_Creds[1].wifi_ssid,   WM_NO_CONFIG, strlen(WM_NO_CONFIG))  ||
-           !strncmp(ESP_WM_LITE_config.WiFi_Creds[1].wifi_pw,     WM_NO_CONFIG, strlen(WM_NO_CONFIG))  ||
-           ( strlen(ESP_WM_LITE_config.WiFi_Creds[0].wifi_ssid) == 0 ) ||
-           ( strlen(ESP_WM_LITE_config.WiFi_Creds[1].wifi_ssid) == 0 ) ||
-           ( strlen(ESP_WM_LITE_config.WiFi_Creds[0].wifi_pw)   < PASSWORD_MIN_LEN ) ||
-           ( strlen(ESP_WM_LITE_config.WiFi_Creds[1].wifi_pw)   < PASSWORD_MIN_LEN ) )
+      if ( !strncmp(ESP_WML_config.WiFi_Creds[0].wifi_ssid,   ESP_WML_NO_CONFIG, strlen(ESP_WML_NO_CONFIG))  ||
+           !strncmp(ESP_WML_config.WiFi_Creds[0].wifi_pw,     ESP_WML_NO_CONFIG, strlen(ESP_WML_NO_CONFIG))  ||
+           !strncmp(ESP_WML_config.WiFi_Creds[1].wifi_ssid,   ESP_WML_NO_CONFIG, strlen(ESP_WML_NO_CONFIG))  ||
+           !strncmp(ESP_WML_config.WiFi_Creds[1].wifi_pw,     ESP_WML_NO_CONFIG, strlen(ESP_WML_NO_CONFIG))  ||
+           ( strlen(ESP_WML_config.WiFi_Creds[0].wifi_ssid) == 0 ) ||
+           ( strlen(ESP_WML_config.WiFi_Creds[1].wifi_ssid) == 0 ) ||
+           ( strlen(ESP_WML_config.WiFi_Creds[0].wifi_pw)   < PASSWORD_MIN_LEN ) ||
+           ( strlen(ESP_WML_config.WiFi_Creds[1].wifi_pw)   < PASSWORD_MIN_LEN ) )
 #endif
       {
         // If SSID, PW ="blank" or NULL, set the flag
         ESP_WML_LOGERROR(F("Invalid Stored WiFi Config Data"));
 
         // Nullify the invalid data to avoid displaying garbage
-        memset(&ESP_WM_LITE_config, 0, sizeof(ESP_WM_LITE_config));
+        memset(&ESP_WML_config, 0, sizeof(ESP_WML_config));
 
         hadConfigData = false;
 
@@ -1694,7 +1694,7 @@ class ESP_WiFiManager_Lite
 
       int checkSum = 0;
       int readCheckSum;
-      totalDataSize = sizeof(ESP_WM_LITE_config) + sizeof(readCheckSum);
+      totalDataSize = sizeof(ESP_WML_config) + sizeof(readCheckSum);
 
       File file = FileFS.open(CREDENTIALS_FILENAME, "r");
       ESP_WML_LOGINFO(F("LoadCredFile "));
@@ -1851,7 +1851,7 @@ class ESP_WiFiManager_Lite
         }
       }
 
-      file.readBytes((char *) &ESP_WM_LITE_config, sizeof(ESP_WM_LITE_config));
+      file.readBytes((char *) &ESP_WML_config, sizeof(ESP_WML_config));
 
       ESP_WML_LOGINFO(F("OK"));
       file.close();
@@ -1867,12 +1867,12 @@ class ESP_WiFiManager_Lite
       ESP_WML_LOGINFO(F("SaveCfgFile "));
 
       int calChecksum = calcChecksum();
-      ESP_WM_LITE_config.checkSum = calChecksum;
+      ESP_WML_config.checkSum = calChecksum;
       ESP_WML_LOGINFO1(F("WCSum=0x"), String(calChecksum, HEX));
 
       if (file)
       {
-        file.write((uint8_t*) &ESP_WM_LITE_config, sizeof(ESP_WM_LITE_config));
+        file.write((uint8_t*) &ESP_WML_config, sizeof(ESP_WML_config));
         file.close();
         ESP_WML_LOGINFO(F("OK"));
       }
@@ -1887,7 +1887,7 @@ class ESP_WiFiManager_Lite
 
       if (file)
       {
-        file.write((uint8_t *) &ESP_WM_LITE_config, sizeof(ESP_WM_LITE_config));
+        file.write((uint8_t *) &ESP_WML_config, sizeof(ESP_WML_config));
         file.close();
         ESP_WML_LOGINFO(F("OK"));
       }
@@ -1913,14 +1913,14 @@ class ESP_WiFiManager_Lite
     void loadAndSaveDefaultConfigData()
     {
       // Load Default Config Data from Sketch
-      memcpy(&ESP_WM_LITE_config, &defaultConfig, sizeof(ESP_WM_LITE_config));
-      strcpy(ESP_WM_LITE_config.header, ESP_WM_LITE_BOARD_TYPE);
+      memcpy(&ESP_WML_config, &defaultConfig, sizeof(ESP_WML_config));
+      strcpy(ESP_WML_config.header, ESP_WML_BOARD_TYPE);
 
       // Including config and dynamic data, and assume valid
       saveAllConfigData();
 
       ESP_WML_LOGERROR(F("======= Start Loaded Config Data ======="));
-      displayConfigData(ESP_WM_LITE_config);
+      displayConfigData(ESP_WML_config);
     }
 
     //////////////////////////////////////////////
@@ -1961,14 +1961,14 @@ class ESP_WiFiManager_Lite
       if (LOAD_DEFAULT_CONFIG_DATA)
       {
         // Load Config Data from Sketch
-        memcpy(&ESP_WM_LITE_config, &defaultConfig, sizeof(ESP_WM_LITE_config));
-        strcpy(ESP_WM_LITE_config.header, ESP_WM_LITE_BOARD_TYPE);
+        memcpy(&ESP_WML_config, &defaultConfig, sizeof(ESP_WML_config));
+        strcpy(ESP_WML_config.header, ESP_WML_BOARD_TYPE);
 
         // Including config and dynamic data, and assume valid
         saveAllConfigData();
 
         ESP_WML_LOGINFO(F("======= Start Loaded Config Data ======="));
-        displayConfigData(ESP_WM_LITE_config);
+        displayConfigData(ESP_WML_config);
 
         // Don't need Config Portal anymore
         return true;
@@ -1989,12 +1989,12 @@ class ESP_WiFiManager_Lite
         }
 
         ESP_WML_LOGINFO(F("======= Start Stored Config Data ======="));
-        displayConfigData(ESP_WM_LITE_config);
+        displayConfigData(ESP_WML_config);
 
         calChecksum = calcChecksum();
 
         ESP_WML_LOGINFO3(F("CCSum=0x"), String(calChecksum, HEX),
-                         F(",RCSum=0x"), String(ESP_WM_LITE_config.checkSum, HEX));
+                         F(",RCSum=0x"), String(ESP_WML_config.checkSum, HEX));
 
 #if USE_DYNAMIC_PARAMETERS
         // Load dynamic data
@@ -2017,27 +2017,27 @@ class ESP_WiFiManager_Lite
         return false;
       }
 
-      if ( (strncmp(ESP_WM_LITE_config.header, ESP_WM_LITE_BOARD_TYPE, strlen(ESP_WM_LITE_BOARD_TYPE)) != 0) ||
-           (calChecksum != ESP_WM_LITE_config.checkSum) || !dynamicDataValid )
+      if ( (strncmp(ESP_WML_config.header, ESP_WML_BOARD_TYPE, strlen(ESP_WML_BOARD_TYPE)) != 0) ||
+           (calChecksum != ESP_WML_config.checkSum) || !dynamicDataValid )
 
       {
         // Including Credentials CSum
-        ESP_WML_LOGINFO1(F("InitCfgFile,sz="), sizeof(ESP_WM_LITE_config));
+        ESP_WML_LOGINFO1(F("InitCfgFile,sz="), sizeof(ESP_WML_config));
 
         // doesn't have any configuration
         if (LOAD_DEFAULT_CONFIG_DATA)
         {
-          memcpy(&ESP_WM_LITE_config, &defaultConfig, sizeof(ESP_WM_LITE_config));
+          memcpy(&ESP_WML_config, &defaultConfig, sizeof(ESP_WML_config));
         }
         else
         {
-          memset(&ESP_WM_LITE_config, 0, sizeof(ESP_WM_LITE_config));
+          memset(&ESP_WML_config, 0, sizeof(ESP_WML_config));
 
-          strcpy(ESP_WM_LITE_config.WiFi_Creds[0].wifi_ssid,   WM_NO_CONFIG);
-          strcpy(ESP_WM_LITE_config.WiFi_Creds[0].wifi_pw,     WM_NO_CONFIG);
-          strcpy(ESP_WM_LITE_config.WiFi_Creds[1].wifi_ssid,   WM_NO_CONFIG);
-          strcpy(ESP_WM_LITE_config.WiFi_Creds[1].wifi_pw,     WM_NO_CONFIG);
-          strcpy(ESP_WM_LITE_config.board_name, WM_NO_CONFIG);
+          strcpy(ESP_WML_config.WiFi_Creds[0].wifi_ssid,   ESP_WML_NO_CONFIG);
+          strcpy(ESP_WML_config.WiFi_Creds[0].wifi_pw,     ESP_WML_NO_CONFIG);
+          strcpy(ESP_WML_config.WiFi_Creds[1].wifi_ssid,   ESP_WML_NO_CONFIG);
+          strcpy(ESP_WML_config.WiFi_Creds[1].wifi_pw,     ESP_WML_NO_CONFIG);
+          strcpy(ESP_WML_config.board_name, ESP_WML_NO_CONFIG);
 
 #if USE_DYNAMIC_PARAMETERS
 
@@ -2045,13 +2045,13 @@ class ESP_WiFiManager_Lite
           {
             // Actual size of pdata is [maxlen + 1]
             memset(myMenuItems[i].pdata, 0, myMenuItems[i].maxlen + 1);
-            strncpy(myMenuItems[i].pdata, WM_NO_CONFIG, myMenuItems[i].maxlen);
+            strncpy(myMenuItems[i].pdata, ESP_WML_NO_CONFIG, myMenuItems[i].maxlen);
           }
 
 #endif
         }
 
-        strcpy(ESP_WM_LITE_config.header, ESP_WM_LITE_BOARD_TYPE);
+        strcpy(ESP_WML_config.header, ESP_WML_BOARD_TYPE);
 
 #if USE_DYNAMIC_PARAMETERS
 
@@ -2063,7 +2063,7 @@ class ESP_WiFiManager_Lite
 #endif
 
         saveAllConfigData();
-        displayConfigData(ESP_WM_LITE_config);
+        displayConfigData(ESP_WML_config);
 
         return false;
       }
@@ -2113,7 +2113,7 @@ class ESP_WiFiManager_Lite
 #endif
 #endif
 
-    // Stating positon to store ESP_WM_LITE_config
+    // Stating positon to store ESP_WML_config
 #define CONFIG_EEPROM_START    (EEPROM_START + FLAG_DATA_SIZE)
 
     //////////////////////////////////////////////
@@ -2183,7 +2183,7 @@ class ESP_WiFiManager_Lite
 
       int readCheckSum;
       int checkSum = 0;
-      uint16_t offset = CONFIG_EEPROM_START + sizeof(ESP_WM_LITE_config) + FORCED_CONFIG_PORTAL_FLAG_DATA_SIZE;
+      uint16_t offset = CONFIG_EEPROM_START + sizeof(ESP_WML_config) + FORCED_CONFIG_PORTAL_FLAG_DATA_SIZE;
 
       // calculate ckecksum first, before overwriting myMenuItems buffer
       for (uint16_t i = 0; i < NUM_MENU_ITEMS; i++)
@@ -2201,8 +2201,8 @@ class ESP_WiFiManager_Lite
         return false;
       }
 
-      offset = CONFIG_EEPROM_START + sizeof(ESP_WM_LITE_config) + FORCED_CONFIG_PORTAL_FLAG_DATA_SIZE;
-      totalDataSize = sizeof(ESP_WM_LITE_config) + sizeof(readCheckSum);
+      offset = CONFIG_EEPROM_START + sizeof(ESP_WML_config) + FORCED_CONFIG_PORTAL_FLAG_DATA_SIZE;
+      totalDataSize = sizeof(ESP_WML_config) + sizeof(readCheckSum);
 
       for (uint16_t i = 0; i < NUM_MENU_ITEMS; i++)
       {
@@ -2230,7 +2230,7 @@ class ESP_WiFiManager_Lite
     void EEPROM_putDynamicData()
     {
       int checkSum = 0;
-      uint16_t offset = CONFIG_EEPROM_START + sizeof(ESP_WM_LITE_config) + FORCED_CONFIG_PORTAL_FLAG_DATA_SIZE;
+      uint16_t offset = CONFIG_EEPROM_START + sizeof(ESP_WML_config) + FORCED_CONFIG_PORTAL_FLAG_DATA_SIZE;
 
       for (uint16_t i = 0; i < NUM_MENU_ITEMS; i++)
       {
@@ -2254,11 +2254,11 @@ class ESP_WiFiManager_Lite
     void saveConfigData()
     {
       int calChecksum = calcChecksum();
-      ESP_WM_LITE_config.checkSum = calChecksum;
+      ESP_WML_config.checkSum = calChecksum;
       ESP_WML_LOGINFO3(F("SaveEEPROM,sz="), EEPROM_SIZE, F(",CSum=0x"), String(calChecksum, HEX))
 
       EEPROM.begin(EEPROM_SIZE);
-      EEPROM.put(CONFIG_EEPROM_START, ESP_WM_LITE_config);
+      EEPROM.put(CONFIG_EEPROM_START, ESP_WML_config);
       EEPROM.end();
     }
 
@@ -2267,11 +2267,11 @@ class ESP_WiFiManager_Lite
     void saveAllConfigData()
     {
       int calChecksum = calcChecksum();
-      ESP_WM_LITE_config.checkSum = calChecksum;
+      ESP_WML_config.checkSum = calChecksum;
       ESP_WML_LOGINFO3(F("SaveEEPROM,sz="), EEPROM_SIZE, F(",CSum=0x"), String(calChecksum, HEX))
 
       EEPROM.begin(EEPROM_SIZE);
-      EEPROM.put(CONFIG_EEPROM_START, ESP_WM_LITE_config);
+      EEPROM.put(CONFIG_EEPROM_START, ESP_WML_config);
 #if USE_DYNAMIC_PARAMETERS
       EEPROM_putDynamicData();
 #endif
@@ -2283,14 +2283,14 @@ class ESP_WiFiManager_Lite
     void loadAndSaveDefaultConfigData()
     {
       // Load Default Config Data from Sketch
-      memcpy(&ESP_WM_LITE_config, &defaultConfig, sizeof(ESP_WM_LITE_config));
-      strcpy(ESP_WM_LITE_config.header, ESP_WM_LITE_BOARD_TYPE);
+      memcpy(&ESP_WML_config, &defaultConfig, sizeof(ESP_WML_config));
+      strcpy(ESP_WML_config.header, ESP_WML_BOARD_TYPE);
 
       // Including config and dynamic data, and assume valid
       saveAllConfigData();
 
       ESP_WML_LOGINFO(F("======= Start Loaded Config Data ======="));
-      displayConfigData(ESP_WM_LITE_config);
+      displayConfigData(ESP_WML_config);
     }
 
     //////////////////////////////////////////////
@@ -2313,7 +2313,7 @@ class ESP_WiFiManager_Lite
         EEPROM.begin(EEPROM_SIZE);
         ESP_WML_LOGINFO1(F("EEPROMsz:"), EEPROM_SIZE);
         // Load data from EEPROM
-        EEPROM.get(CONFIG_EEPROM_START, ESP_WM_LITE_config);
+        EEPROM.get(CONFIG_EEPROM_START, ESP_WML_config);
 #if USE_DYNAMIC_PARAMETERS
         // Load dynamic data from EEPROM
         dynamicDataValid = EEPROM_getDynamicData();
@@ -2328,11 +2328,11 @@ class ESP_WiFiManager_Lite
         }
 
         ESP_WML_LOGINFO(F("======= Start Stored Config Data ======="));
-        displayConfigData(ESP_WM_LITE_config);
+        displayConfigData(ESP_WML_config);
 
         calChecksum = calcChecksum();
         ESP_WML_LOGINFO3(F("CCSum=0x"), String(calChecksum, HEX),
-                         F(",RCSum=0x"), String(ESP_WM_LITE_config.checkSum, HEX));
+                         F(",RCSum=0x"), String(ESP_WML_config.checkSum, HEX));
 
 #if USE_DYNAMIC_PARAMETERS
         if (dynamicDataValid)
@@ -2346,8 +2346,8 @@ class ESP_WiFiManager_Lite
 #endif
       }
 
-      if ( (strncmp(ESP_WM_LITE_config.header, ESP_WM_LITE_BOARD_TYPE, strlen(ESP_WM_LITE_BOARD_TYPE)) != 0) ||
-           (calChecksum != ESP_WM_LITE_config.checkSum) || !dynamicDataValid )
+      if ( (strncmp(ESP_WML_config.header, ESP_WML_BOARD_TYPE, strlen(ESP_WML_BOARD_TYPE)) != 0) ||
+           (calChecksum != ESP_WML_config.checkSum) || !dynamicDataValid )
       {
         // Including Credentials CSum
         ESP_WML_LOGINFO3(F("InitEEPROM,sz="), EEPROM_SIZE, F(",DataSz="), totalDataSize);
@@ -2355,23 +2355,23 @@ class ESP_WiFiManager_Lite
         // doesn't have any configuration
         if (LOAD_DEFAULT_CONFIG_DATA)
         {
-          memcpy(&ESP_WM_LITE_config, &defaultConfig, sizeof(ESP_WM_LITE_config));
+          memcpy(&ESP_WML_config, &defaultConfig, sizeof(ESP_WML_config));
         }
         else
         {
-          memset(&ESP_WM_LITE_config, 0, sizeof(ESP_WM_LITE_config));
+          memset(&ESP_WML_config, 0, sizeof(ESP_WML_config));
 
-          strcpy(ESP_WM_LITE_config.WiFi_Creds[0].wifi_ssid,   WM_NO_CONFIG);
-          strcpy(ESP_WM_LITE_config.WiFi_Creds[0].wifi_pw,     WM_NO_CONFIG);
-          strcpy(ESP_WM_LITE_config.WiFi_Creds[1].wifi_ssid,   WM_NO_CONFIG);
-          strcpy(ESP_WM_LITE_config.WiFi_Creds[1].wifi_pw,     WM_NO_CONFIG);
-          strcpy(ESP_WM_LITE_config.board_name, WM_NO_CONFIG);
+          strcpy(ESP_WML_config.WiFi_Creds[0].wifi_ssid,   ESP_WML_NO_CONFIG);
+          strcpy(ESP_WML_config.WiFi_Creds[0].wifi_pw,     ESP_WML_NO_CONFIG);
+          strcpy(ESP_WML_config.WiFi_Creds[1].wifi_ssid,   ESP_WML_NO_CONFIG);
+          strcpy(ESP_WML_config.WiFi_Creds[1].wifi_pw,     ESP_WML_NO_CONFIG);
+          strcpy(ESP_WML_config.board_name, ESP_WML_NO_CONFIG);
         }
 
-        strcpy(ESP_WM_LITE_config.header, ESP_WM_LITE_BOARD_TYPE);
+        strcpy(ESP_WML_config.header, ESP_WML_BOARD_TYPE);
 
         saveAllConfigData();
-        displayConfigData(ESP_WM_LITE_config);
+        displayConfigData(ESP_WML_config);
 
         return false;
       }
@@ -2476,16 +2476,16 @@ class ESP_WiFiManager_Lite
       String pitem;
       pitem.reserve(600);
 
-      root_html_template = FPSTR(ESP_WM_LITE_HTML_HEAD_START);
+      root_html_template = FPSTR(ESP_WML_HTML_HEAD_START);
 
 #if USING_CUSTOMS_STYLE
       // Using Customs style when not NULL
       if (_CustomsHeadStyle)
         root_html_template += FPSTR(_CustomsHeadStyle);
       else
-        root_html_template += FPSTR(ESP_WM_LITE_HTML_HEAD_STYLE);
+        root_html_template += FPSTR(ESP_WML_HTML_HEAD_STYLE);
 #else
-      root_html_template += FPSTR(ESP_WM_LITE_HTML_HEAD_STYLE);
+      root_html_template += FPSTR(ESP_WML_HTML_HEAD_STYLE);
 #endif
 
 #if USING_CUSTOMS_HEAD_ELEMENT
@@ -2504,42 +2504,42 @@ class ESP_WiFiManager_Lite
         if (indices[i] == -1)
           continue;     // skip duplicates and those that are below the required quality
 
-        ListOfSSIDs += String(FPSTR(ESP_WM_LITE_OPTION_START)) + String(WiFi.SSID(indices[i])) + String(FPSTR(ESP_WM_LITE_OPTION_END));
+        ListOfSSIDs += String(FPSTR(ESP_WML_OPTION_START)) + String(WiFi.SSID(indices[i])) + String(FPSTR(ESP_WML_OPTION_END));
         list_items++;   // Count number of suitable, distinct SSIDs to be included in list
       }
 
       ESP_WML_LOGDEBUG(ListOfSSIDs);
 
       if (ListOfSSIDs == "")    // No SSID found or none was good enough
-        ListOfSSIDs = String(FPSTR(ESP_WM_LITE_OPTION_START)) + String(FPSTR(ESP_WM_LITE_NO_NETWORKS_FOUND)) + String(FPSTR(ESP_WM_LITE_OPTION_END));
+        ListOfSSIDs = String(FPSTR(ESP_WML_OPTION_START)) + String(FPSTR(ESP_WML_NO_NETWORKS_FOUND)) + String(FPSTR(ESP_WML_OPTION_END));
 
-      pitem = FPSTR(ESP_WM_LITE_HTML_HEAD_END);
+      pitem = FPSTR(ESP_WML_HTML_HEAD_END);
 
 #if MANUAL_SSID_INPUT_ALLOWED
-      pitem.replace(F("[[input_id]]"),  F("<input id='id' list='SSIDs'>")  + String(FPSTR(ESP_WM_LITE_DATALIST_START)) + F("'SSIDs'>") +
-                    ListOfSSIDs + FPSTR(ESP_WM_LITE_DATALIST_END));
+      pitem.replace(F("[[input_id]]"),  F("<input id='id' list='SSIDs'>")  + String(FPSTR(ESP_WML_DATALIST_START)) + F("'SSIDs'>") +
+                    ListOfSSIDs + FPSTR(ESP_WML_DATALIST_END));
       ESP_WML_LOGDEBUG1(F("pitem:"), pitem);
-      pitem.replace(F("[[input_id1]]"), F("<input id='id1' list='SSIDs'>") + String(FPSTR(ESP_WM_LITE_DATALIST_START)) + F("'SSIDs'>") +
-                    ListOfSSIDs + FPSTR(ESP_WM_LITE_DATALIST_END));
+      pitem.replace(F("[[input_id1]]"), F("<input id='id1' list='SSIDs'>") + String(FPSTR(ESP_WML_DATALIST_START)) + F("'SSIDs'>") +
+                    ListOfSSIDs + FPSTR(ESP_WML_DATALIST_END));
       ESP_WML_LOGDEBUG1(F("pitem:"), pitem);
 #else
-      pitem.replace(F("[[input_id]]"),  F("<select id='id'>")  + ListOfSSIDs + String(FPSTR(ESP_WM_LITE_SELECT_END)));
-      pitem.replace(F("[[input_id1]]"), F("<select id='id1'>") + ListOfSSIDs + String(FPSTR(ESP_WM_LITE_SELECT_END)));
+      pitem.replace(F("[[input_id]]"),  F("<select id='id'>")  + ListOfSSIDs + String(FPSTR(ESP_WML_SELECT_END)));
+      pitem.replace(F("[[input_id1]]"), F("<select id='id1'>") + ListOfSSIDs + String(FPSTR(ESP_WML_SELECT_END)));
 #endif
 
-      root_html_template += pitem + FPSTR(ESP_WM_LITE_FLDSET_START);
+      root_html_template += pitem + FPSTR(ESP_WML_FLDSET_START);
 
 #else
-      pitem = FPSTR(ESP_WM_LITE_HTML_HEAD_END);
-      pitem.replace(F("[[input_id]]"),  FPSTR(ESP_WM_LITE_HTML_INPUT_ID));
-      pitem.replace(F("[[input_id1]]"), FPSTR(ESP_WM_LITE_HTML_INPUT_ID1));
-      root_html_template += pitem + FPSTR(ESP_WM_LITE_FLDSET_START);
+      pitem = FPSTR(ESP_WML_HTML_HEAD_END);
+      pitem.replace(F("[[input_id]]"),  FPSTR(ESP_WML_HTML_INPUT_ID));
+      pitem.replace(F("[[input_id1]]"), FPSTR(ESP_WML_HTML_INPUT_ID1));
+      root_html_template += pitem + FPSTR(ESP_WML_FLDSET_START);
 #endif    // SCAN_WIFI_NETWORKS
 
 #if USE_DYNAMIC_PARAMETERS
       for (uint16_t i = 0; i < NUM_MENU_ITEMS; i++)
       {
-        pitem = FPSTR(ESP_WM_LITE_HTML_PARAM);
+        pitem = FPSTR(ESP_WML_HTML_PARAM);
         pitem.replace("{b}", myMenuItems[i].displayName);
         pitem.replace("{v}", myMenuItems[i].id);
         pitem.replace("{i}", myMenuItems[i].id);
@@ -2547,18 +2547,18 @@ class ESP_WiFiManager_Lite
       }
 #endif
 
-      root_html_template += String(FPSTR(ESP_WM_LITE_FLDSET_END)) + FPSTR(ESP_WM_LITE_HTML_BUTTON) + FPSTR(ESP_WM_LITE_HTML_SCRIPT);
+      root_html_template += String(FPSTR(ESP_WML_FLDSET_END)) + FPSTR(ESP_WML_HTML_BUTTON) + FPSTR(ESP_WML_HTML_SCRIPT);
 
 #if USE_DYNAMIC_PARAMETERS
       for (uint16_t i = 0; i < NUM_MENU_ITEMS; i++)
       {
-        pitem = FPSTR(ESP_WM_LITE_HTML_SCRIPT_ITEM);
+        pitem = FPSTR(ESP_WML_HTML_SCRIPT_ITEM);
         pitem.replace("{d}", myMenuItems[i].id);
         root_html_template += pitem;
       }
 #endif
 
-      root_html_template += String(FPSTR(ESP_WM_LITE_HTML_SCRIPT_END)) + FPSTR(ESP_WM_LITE_HTML_END);
+      root_html_template += String(FPSTR(ESP_WML_HTML_SCRIPT_END)) + FPSTR(ESP_WML_HTML_END);
 
       return;
     }
@@ -2567,20 +2567,20 @@ class ESP_WiFiManager_Lite
 
     void serverSendHeaders()
     {
-      ESP_WML_LOGDEBUG3(F("serverSendHeaders:WM_HTTP_CACHE_CONTROL:"), FPSTR(WM_HTTP_CACHE_CONTROL), " : ", FPSTR(WM_HTTP_NO_STORE));
-      server->sendHeader(FPSTR(WM_HTTP_CACHE_CONTROL), FPSTR(WM_HTTP_NO_STORE));
+      ESP_WML_LOGDEBUG3(F("serverSendHeaders:ESP_WML_HTTP_CACHE_CONTROL:"), FPSTR(ESP_WML_HTTP_CACHE_CONTROL), " : ", FPSTR(ESP_WML_HTTP_NO_STORE));
+      server->sendHeader(FPSTR(ESP_WML_HTTP_CACHE_CONTROL), FPSTR(ESP_WML_HTTP_NO_STORE));
 
 #if USING_CORS_FEATURE
-      // New from v1.2.0, for configure CORS Header, default to WM_HTTP_CORS_ALLOW_ALL = "*"
-      ESP_WML_LOGDEBUG3(F("serverSendHeaders:WM_HTTP_CORS:"), FPSTR(WM_HTTP_CORS), " : ", FPSTR(_CORS_Header));
-      server->sendHeader(FPSTR(WM_HTTP_CORS), FPSTR(_CORS_Header));
+      // New from v1.2.0, for configure CORS Header, default to ESP_WML_HTTP_CORS_ALLOW_ALL = "*"
+      ESP_WML_LOGDEBUG3(F("serverSendHeaders:ESP_WML_HTTP_CORS:"), FPSTR(ESP_WML_HTTP_CORS), " : ", FPSTR(_CORS_Header));
+      server->sendHeader(FPSTR(ESP_WML_HTTP_CORS), FPSTR(_CORS_Header));
 #endif
 
-      ESP_WML_LOGDEBUG3(F("serverSendHeaders:WM_HTTP_PRAGMA:"), FPSTR(WM_HTTP_PRAGMA), " : ", FPSTR(WM_HTTP_NO_CACHE));
-      server->sendHeader(FPSTR(WM_HTTP_PRAGMA), FPSTR(WM_HTTP_NO_CACHE));
+      ESP_WML_LOGDEBUG3(F("serverSendHeaders:ESP_WML_HTTP_PRAGMA:"), FPSTR(ESP_WML_HTTP_PRAGMA), " : ", FPSTR(ESP_WML_HTTP_NO_CACHE));
+      server->sendHeader(FPSTR(ESP_WML_HTTP_PRAGMA), FPSTR(ESP_WML_HTTP_NO_CACHE));
 
-      ESP_WML_LOGDEBUG3(F("serverSendHeaders:WM_HTTP_EXPIRES:"), FPSTR(WM_HTTP_EXPIRES), " : ", "-1");
-      server->sendHeader(FPSTR(WM_HTTP_EXPIRES), "-1");
+      ESP_WML_LOGDEBUG3(F("serverSendHeaders:ESP_WML_HTTP_EXPIRES:"), FPSTR(ESP_WML_HTTP_EXPIRES), " : ", "-1");
+      server->sendHeader(FPSTR(ESP_WML_HTTP_EXPIRES), "-1");
     }
 
     //////////////////////////////////////////////
@@ -2614,21 +2614,21 @@ class ESP_WiFiManager_Lite
             // Replace only if Hostname is valid
             result.replace("ESP_WM_LITE", RFC952_hostname);
           }
-          else if ( ESP_WM_LITE_config.board_name[0] != 0 )
+          else if ( ESP_WML_config.board_name[0] != 0 )
           {
             // Or replace only if board_name is valid.  Otherwise, keep intact
-            result.replace("ESP_WM_LITE", ESP_WM_LITE_config.board_name);
+            result.replace("ESP_WM_LITE", ESP_WML_config.board_name);
           }
 
           if (hadConfigData)
           {
-            result.replace("[[id]]",     ESP_WM_LITE_config.WiFi_Creds[0].wifi_ssid);
-            result.replace("[[pw]]",     ESP_WM_LITE_config.WiFi_Creds[0].wifi_pw);
-            result.replace("[[id1]]",    ESP_WM_LITE_config.WiFi_Creds[1].wifi_ssid);
-            result.replace("[[pw1]]",    ESP_WM_LITE_config.WiFi_Creds[1].wifi_pw);
+            result.replace("[[id]]",     ESP_WML_config.WiFi_Creds[0].wifi_ssid);
+            result.replace("[[pw]]",     ESP_WML_config.WiFi_Creds[0].wifi_pw);
+            result.replace("[[id1]]",    ESP_WML_config.WiFi_Creds[1].wifi_ssid);
+            result.replace("[[pw1]]",    ESP_WML_config.WiFi_Creds[1].wifi_pw);
 
 #if USING_BOARD_NAME
-            result.replace("[[nm]]",     ESP_WM_LITE_config.board_name);
+            result.replace("[[nm]]",     ESP_WML_config.board_name);
 #endif
           }
           else
@@ -2656,15 +2656,15 @@ class ESP_WiFiManager_Lite
           ESP_WML_LOGDEBUG1(F("h:HTML page size:"), result.length());
           ESP_WML_LOGDEBUG1(F("h:HTML="), result);
 
-          server->send(200, FPSTR(WM_HTTP_HEAD_TEXT_HTML), result);
+          server->send(200, FPSTR(ESP_WML_HTTP_HEAD_TEXT_HTML), result);
 
           return;
         }
 
         if (number_items_Updated == 0)
         {
-          memset(&ESP_WM_LITE_config, 0, sizeof(ESP_WM_LITE_config));
-          strcpy(ESP_WM_LITE_config.header, ESP_WM_LITE_BOARD_TYPE);
+          memset(&ESP_WML_config, 0, sizeof(ESP_WML_config));
+          strcpy(ESP_WML_config.header, ESP_WML_BOARD_TYPE);
         }
 
 #if USE_DYNAMIC_PARAMETERS
@@ -2708,11 +2708,11 @@ class ESP_WiFiManager_Lite
 
           number_items_Updated++;
 
-          if (strlen(value.c_str()) < sizeof(ESP_WM_LITE_config.WiFi_Creds[0].wifi_ssid) - 1)
-            strcpy(ESP_WM_LITE_config.WiFi_Creds[0].wifi_ssid, value.c_str());
+          if (strlen(value.c_str()) < sizeof(ESP_WML_config.WiFi_Creds[0].wifi_ssid) - 1)
+            strcpy(ESP_WML_config.WiFi_Creds[0].wifi_ssid, value.c_str());
           else
-            strncpy(ESP_WM_LITE_config.WiFi_Creds[0].wifi_ssid, value.c_str(),
-                    sizeof(ESP_WM_LITE_config.WiFi_Creds[0].wifi_ssid) - 1);
+            strncpy(ESP_WML_config.WiFi_Creds[0].wifi_ssid, value.c_str(),
+                    sizeof(ESP_WML_config.WiFi_Creds[0].wifi_ssid) - 1);
         }
         else if (!pw_Updated && (key == String("pw")))
         {
@@ -2721,10 +2721,10 @@ class ESP_WiFiManager_Lite
 
           number_items_Updated++;
 
-          if (strlen(value.c_str()) < sizeof(ESP_WM_LITE_config.WiFi_Creds[0].wifi_pw) - 1)
-            strcpy(ESP_WM_LITE_config.WiFi_Creds[0].wifi_pw, value.c_str());
+          if (strlen(value.c_str()) < sizeof(ESP_WML_config.WiFi_Creds[0].wifi_pw) - 1)
+            strcpy(ESP_WML_config.WiFi_Creds[0].wifi_pw, value.c_str());
           else
-            strncpy(ESP_WM_LITE_config.WiFi_Creds[0].wifi_pw, value.c_str(), sizeof(ESP_WM_LITE_config.WiFi_Creds[0].wifi_pw) - 1);
+            strncpy(ESP_WML_config.WiFi_Creds[0].wifi_pw, value.c_str(), sizeof(ESP_WML_config.WiFi_Creds[0].wifi_pw) - 1);
         }
         else if (!id1_Updated && (key == String("id1")))
         {
@@ -2733,11 +2733,11 @@ class ESP_WiFiManager_Lite
 
           number_items_Updated++;
 
-          if (strlen(value.c_str()) < sizeof(ESP_WM_LITE_config.WiFi_Creds[1].wifi_ssid) - 1)
-            strcpy(ESP_WM_LITE_config.WiFi_Creds[1].wifi_ssid, value.c_str());
+          if (strlen(value.c_str()) < sizeof(ESP_WML_config.WiFi_Creds[1].wifi_ssid) - 1)
+            strcpy(ESP_WML_config.WiFi_Creds[1].wifi_ssid, value.c_str());
           else
-            strncpy(ESP_WM_LITE_config.WiFi_Creds[1].wifi_ssid, value.c_str(),
-                    sizeof(ESP_WM_LITE_config.WiFi_Creds[1].wifi_ssid) - 1);
+            strncpy(ESP_WML_config.WiFi_Creds[1].wifi_ssid, value.c_str(),
+                    sizeof(ESP_WML_config.WiFi_Creds[1].wifi_ssid) - 1);
         }
         else if (!pw1_Updated && (key == String("pw1")))
         {
@@ -2746,10 +2746,10 @@ class ESP_WiFiManager_Lite
 
           number_items_Updated++;
 
-          if (strlen(value.c_str()) < sizeof(ESP_WM_LITE_config.WiFi_Creds[1].wifi_pw) - 1)
-            strcpy(ESP_WM_LITE_config.WiFi_Creds[1].wifi_pw, value.c_str());
+          if (strlen(value.c_str()) < sizeof(ESP_WML_config.WiFi_Creds[1].wifi_pw) - 1)
+            strcpy(ESP_WML_config.WiFi_Creds[1].wifi_pw, value.c_str());
           else
-            strncpy(ESP_WM_LITE_config.WiFi_Creds[1].wifi_pw, value.c_str(), sizeof(ESP_WM_LITE_config.WiFi_Creds[1].wifi_pw) - 1);
+            strncpy(ESP_WML_config.WiFi_Creds[1].wifi_pw, value.c_str(), sizeof(ESP_WML_config.WiFi_Creds[1].wifi_pw) - 1);
         }
 
 #if USING_BOARD_NAME
@@ -2760,10 +2760,10 @@ class ESP_WiFiManager_Lite
 
           number_items_Updated++;
 
-          if (strlen(value.c_str()) < sizeof(ESP_WM_LITE_config.board_name) - 1)
-            strcpy(ESP_WM_LITE_config.board_name, value.c_str());
+          if (strlen(value.c_str()) < sizeof(ESP_WML_config.board_name) - 1)
+            strcpy(ESP_WML_config.board_name, value.c_str());
           else
-            strncpy(ESP_WM_LITE_config.board_name, value.c_str(), sizeof(ESP_WM_LITE_config.board_name) - 1);
+            strncpy(ESP_WML_config.board_name, value.c_str(), sizeof(ESP_WML_config.board_name) - 1);
         }
 
 #endif
@@ -2799,7 +2799,7 @@ class ESP_WiFiManager_Lite
         ESP_WML_LOGDEBUG1(F("h:items updated ="), number_items_Updated);
         ESP_WML_LOGDEBUG3(F("h:key ="), key, ", value =", value);
 
-        server->send(200, FPSTR(WM_HTTP_HEAD_TEXT_HTML), "OK");
+        server->send(200, FPSTR(ESP_WML_HTTP_HEAD_TEXT_HTML), "OK");
 
 #if USE_DYNAMIC_PARAMETERS
 
