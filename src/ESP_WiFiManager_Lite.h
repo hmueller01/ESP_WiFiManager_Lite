@@ -916,12 +916,6 @@ class ESP_WiFiManager_Lite
           if (server)
           {
             server->handleClient();
-
-            // Fix ESP32-S2 issue with WebServer (https://github.com/espressif/arduino-esp32/issues/4348)
-            if ( String(ARDUINO_BOARD) == "ESP32S2_DEV" )
-            {
-              delay(1);
-            }
           }
 
           return;
