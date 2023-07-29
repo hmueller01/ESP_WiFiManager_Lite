@@ -1505,7 +1505,7 @@ class ESP_WiFiManager_Lite
     //////////////////////////////////////
 
 #define ESP_WML_BOARD_TYPE   "ESP_WM_LITE"
-#define WM_NO_CONFIG         "blank"
+#define ESP_WML_NO_CONFIG    "blank"
 
     int calcChecksum()
     {
@@ -1527,20 +1527,20 @@ class ESP_WiFiManager_Lite
 
       // If SSID = "blank" or NULL, or PWD length < 8 (as required by standard) => return false
       // Only need 1 set of valid SSID/PWD
-      if (!( ( strncmp(ESP_WML_config.WiFi_Creds[0].wifi_ssid, WM_NO_CONFIG, strlen(WM_NO_CONFIG)) &&
+      if (!( ( strncmp(ESP_WML_config.WiFi_Creds[0].wifi_ssid, ESP_WML_NO_CONFIG, strlen(ESP_WML_NO_CONFIG)) &&
                ( strlen(ESP_WML_config.WiFi_Creds[0].wifi_ssid) >  0 ) ) &&
                ( strlen(ESP_WML_config.WiFi_Creds[0].wifi_pw) >= PASSWORD_MIN_LEN ) ) ||
-             ( strncmp(ESP_WML_config.WiFi_Creds[1].wifi_ssid, WM_NO_CONFIG, strlen(WM_NO_CONFIG)) &&
+             ( strncmp(ESP_WML_config.WiFi_Creds[1].wifi_ssid, ESP_WML_NO_CONFIG, strlen(ESP_WML_NO_CONFIG)) &&
                ( strlen(ESP_WML_config.WiFi_Creds[1].wifi_ssid) >  0 )  &&
                ( strlen(ESP_WML_config.WiFi_Creds[1].wifi_pw) >= PASSWORD_MIN_LEN ) ) )
 #else
 
       // If SSID = "blank" or NULL, or PWD length < 8 (as required by standard) => invalid set
       // Need both sets of valid SSID/PWD
-      if ( !strncmp(ESP_WML_config.WiFi_Creds[0].wifi_ssid,   WM_NO_CONFIG, strlen(WM_NO_CONFIG))  ||
-           !strncmp(ESP_WML_config.WiFi_Creds[0].wifi_pw,     WM_NO_CONFIG, strlen(WM_NO_CONFIG))  ||
-           !strncmp(ESP_WML_config.WiFi_Creds[1].wifi_ssid,   WM_NO_CONFIG, strlen(WM_NO_CONFIG))  ||
-           !strncmp(ESP_WML_config.WiFi_Creds[1].wifi_pw,     WM_NO_CONFIG, strlen(WM_NO_CONFIG))  ||
+      if ( !strncmp(ESP_WML_config.WiFi_Creds[0].wifi_ssid,   ESP_WML_NO_CONFIG, strlen(ESP_WML_NO_CONFIG))  ||
+           !strncmp(ESP_WML_config.WiFi_Creds[0].wifi_pw,     ESP_WML_NO_CONFIG, strlen(ESP_WML_NO_CONFIG))  ||
+           !strncmp(ESP_WML_config.WiFi_Creds[1].wifi_ssid,   ESP_WML_NO_CONFIG, strlen(ESP_WML_NO_CONFIG))  ||
+           !strncmp(ESP_WML_config.WiFi_Creds[1].wifi_pw,     ESP_WML_NO_CONFIG, strlen(ESP_WML_NO_CONFIG))  ||
            ( strlen(ESP_WML_config.WiFi_Creds[0].wifi_ssid) == 0 ) ||
            ( strlen(ESP_WML_config.WiFi_Creds[1].wifi_ssid) == 0 ) ||
            ( strlen(ESP_WML_config.WiFi_Creds[0].wifi_pw)   < PASSWORD_MIN_LEN ) ||
@@ -2033,11 +2033,11 @@ class ESP_WiFiManager_Lite
         {
           memset(&ESP_WML_config, 0, sizeof(ESP_WML_config));
 
-          strcpy(ESP_WML_config.WiFi_Creds[0].wifi_ssid,   WM_NO_CONFIG);
-          strcpy(ESP_WML_config.WiFi_Creds[0].wifi_pw,     WM_NO_CONFIG);
-          strcpy(ESP_WML_config.WiFi_Creds[1].wifi_ssid,   WM_NO_CONFIG);
-          strcpy(ESP_WML_config.WiFi_Creds[1].wifi_pw,     WM_NO_CONFIG);
-          strcpy(ESP_WML_config.board_name, WM_NO_CONFIG);
+          strcpy(ESP_WML_config.WiFi_Creds[0].wifi_ssid,   ESP_WML_NO_CONFIG);
+          strcpy(ESP_WML_config.WiFi_Creds[0].wifi_pw,     ESP_WML_NO_CONFIG);
+          strcpy(ESP_WML_config.WiFi_Creds[1].wifi_ssid,   ESP_WML_NO_CONFIG);
+          strcpy(ESP_WML_config.WiFi_Creds[1].wifi_pw,     ESP_WML_NO_CONFIG);
+          strcpy(ESP_WML_config.board_name, ESP_WML_NO_CONFIG);
 
 #if USE_DYNAMIC_PARAMETERS
 
@@ -2045,7 +2045,7 @@ class ESP_WiFiManager_Lite
           {
             // Actual size of pdata is [maxlen + 1]
             memset(myMenuItems[i].pdata, 0, myMenuItems[i].maxlen + 1);
-            strncpy(myMenuItems[i].pdata, WM_NO_CONFIG, myMenuItems[i].maxlen);
+            strncpy(myMenuItems[i].pdata, ESP_WML_NO_CONFIG, myMenuItems[i].maxlen);
           }
 
 #endif
@@ -2361,11 +2361,11 @@ class ESP_WiFiManager_Lite
         {
           memset(&ESP_WML_config, 0, sizeof(ESP_WML_config));
 
-          strcpy(ESP_WML_config.WiFi_Creds[0].wifi_ssid,   WM_NO_CONFIG);
-          strcpy(ESP_WML_config.WiFi_Creds[0].wifi_pw,     WM_NO_CONFIG);
-          strcpy(ESP_WML_config.WiFi_Creds[1].wifi_ssid,   WM_NO_CONFIG);
-          strcpy(ESP_WML_config.WiFi_Creds[1].wifi_pw,     WM_NO_CONFIG);
-          strcpy(ESP_WML_config.board_name, WM_NO_CONFIG);
+          strcpy(ESP_WML_config.WiFi_Creds[0].wifi_ssid,   ESP_WML_NO_CONFIG);
+          strcpy(ESP_WML_config.WiFi_Creds[0].wifi_pw,     ESP_WML_NO_CONFIG);
+          strcpy(ESP_WML_config.WiFi_Creds[1].wifi_ssid,   ESP_WML_NO_CONFIG);
+          strcpy(ESP_WML_config.WiFi_Creds[1].wifi_pw,     ESP_WML_NO_CONFIG);
+          strcpy(ESP_WML_config.board_name, ESP_WML_NO_CONFIG);
         }
 
         strcpy(ESP_WML_config.header, ESP_WML_BOARD_TYPE);
