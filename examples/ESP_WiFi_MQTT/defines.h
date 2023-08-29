@@ -104,6 +104,9 @@
 // Only use whenever urgent tasks in loop() can't be delayed. But if so, it's better you have to rewrite your code, e.g. using higher priority tasks.
 //#define WIFI_RECON_INTERVAL                   30000
 
+// Default WiFi connection timeout in ms is 5000
+//#define WIFI_CONNECT_TIMEOUT 10000
+
 /////////////////////////////////////////////
 
 // Permit reset hardware if no WiFi to permit user another chance to access Config Portal.
