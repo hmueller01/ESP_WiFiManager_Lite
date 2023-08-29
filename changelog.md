@@ -40,6 +40,17 @@
 
 ## Changelog
 
+### Release v1.11.0 (WIP)
+
+1. [Output and string fixes #1](https://github.com/hmueller01/ESP_WiFiManager_Lite/pull/1)
+2. [removed unused code and comments #2](https://github.com/hmueller01/ESP_WiFiManager_Lite/pull/2)
+3. [Eeprom fixes #3](https://github.com/hmueller01/ESP_WiFiManager_Lite/pull/3)
+4. [optimized output in isForcedCP() #4](https://github.com/hmueller01/ESP_WiFiManager_Lite/pull/4)
+5. [global renaming of used variables (leading ESP_WML) #5](https://github.com/hmueller01/ESP_WiFiManager_Lite/pull/5)
+6. [removed handleClient delay for ESP32 #6](https://github.com/hmueller01/ESP_WiFiManager_Lite/pull/6)
+7. [fixed WiFi connected time to num retries #7](https://github.com/hmueller01/ESP_WiFiManager_Lite/pull/7)
+8. [added WIFI_CONNECT_TIMEOUT to overwrite the default WiFi connect timeout #8](https://github.com/hmueller01/ESP_WiFiManager_Lite/pull/8)
+
 ### Release v1.10.5
 
 1. Using PROGMEM for strings in examples. Check [Example fixes #37](https://github.com/khoih-prog/ESP_WiFiManager_Lite/pull/37)

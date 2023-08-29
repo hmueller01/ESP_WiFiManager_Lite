@@ -9,7 +9,7 @@
   Built by Khoi Hoang https://github.com/khoih-prog/ESP_WiFiManager_Lite
   Licensed under MIT license
 
-  Version: 1.10.5
+  Version: 1.11.0 (draft, unreleased)
 
   Version Modified By   Date        Comments
   ------- -----------  ----------   -----------
@@ -24,6 +24,10 @@
   1.10.3  K Hoang      19/01/2023  Fix compiler error if EEPROM is used
   1.10.4  K Hoang      27/01/2023  Using PROGMEM for HTML strings
   1.10.5  K Hoang      28/01/2023  Using PROGMEM for strings in examples
+  1.11.0  H Mueller    29/08/2023  Output and string fixes, removed unused code and comments, Eeprom fixes, 
+                                   optimized output in isForcedCP(), global renaming of used variables (leading ESP_WML),
+                                   removed handleClient delay for ESP32, fixed WiFi connected time to num retries, 
+                                   added WIFI_CONNECT_TIMEOUT to overwrite the default WiFi connect timeout
  *****************************************************************************************************************************/
 
 #pragma once
@@ -2393,6 +2397,11 @@ class ESP_WiFiManager_Lite
 #endif
 #endif
 
+    // Used default WiFi connect timeout if not defined.
+#if !defined(WIFI_CONNECT_TIMEOUT)
+#define WIFI_CONNECT_TIMEOUT
+#endif
+
     uint8_t connectMultiWiFi()
     {
 #if ESP32
@@ -2409,7 +2418,7 @@ class ESP_WiFiManager_Lite
 #define WIFI_MULTI_1ST_CONNECT_WAITING_MS             2200L
 #endif
 
-#define WIFI_MULTI_CONNECT_WAITING_MS                   500L
+#define WIFI_MULTI_CONNECT_WAITING_MS                 500L
 
       uint8_t status;
 
@@ -2419,7 +2428,7 @@ class ESP_WiFiManager_Lite
 
       setHostname();
 
-      status = wifiMulti.run();
+      status = wifiMulti.run(WIFI_CONNECT_TIMEOUT);
       delay(WIFI_MULTI_1ST_CONNECT_WAITING_MS);
 
       uint8_t numWiFiReconTries = 0;
