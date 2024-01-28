@@ -2515,7 +2515,7 @@ class ESP_WiFiManager_Lite
       if (ListOfSSIDs == "")    // No SSID found or none was good enough
         ListOfSSIDs = String(FPSTR(ESP_WML_OPTION_START)) + String(FPSTR(ESP_WML_NO_NETWORKS_FOUND)) + String(FPSTR(ESP_WML_OPTION_END));
 
-      pitem = String(FPSTR(ESP_WML_HTML_HEAD_END));
+      pitem = FPSTR(ESP_WML_HTML_HEAD_END);
 
 #if MANUAL_SSID_INPUT_ALLOWED
       pitem.replace(F("[[input_id]]"),  String(F("<input id='id' list='SSIDs'>")) + String(FPSTR(ESP_WML_DATALIST_START)) +
@@ -2535,7 +2535,7 @@ class ESP_WiFiManager_Lite
       pitem = FPSTR(ESP_WML_HTML_HEAD_END);
       pitem.replace(F("[[input_id]]"),  FPSTR(ESP_WML_HTML_INPUT_ID));
       pitem.replace(F("[[input_id1]]"), FPSTR(ESP_WML_HTML_INPUT_ID1));
-      root_html_template += pitem + FPSTR(ESP_WML_FLDSET_START);
+      root_html_template += pitem + String(FPSTR(ESP_WML_FLDSET_START));
 #endif    // SCAN_WIFI_NETWORKS
 
 #if USE_DYNAMIC_PARAMETERS
@@ -2554,7 +2554,7 @@ class ESP_WiFiManager_Lite
 #if USE_DYNAMIC_PARAMETERS
       for (uint16_t i = 0; i < NUM_MENU_ITEMS; i++)
       {
-        pitem = String(FPSTR(ESP_WML_HTML_SCRIPT_ITEM));
+        pitem = FPSTR(ESP_WML_HTML_SCRIPT_ITEM);
         pitem.replace("{d}", myMenuItems[i].id);
         root_html_template += pitem;
       }
