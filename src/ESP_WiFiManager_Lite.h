@@ -2541,7 +2541,7 @@ class ESP_WiFiManager_Lite
 #if USE_DYNAMIC_PARAMETERS
       for (uint16_t i = 0; i < NUM_MENU_ITEMS; i++)
       {
-        pitem = String(FPSTR(ESP_WML_HTML_PARAM));
+        pitem = FPSTR(ESP_WML_HTML_PARAM);
         pitem.replace("{b}", myMenuItems[i].displayName);
         pitem.replace("{v}", myMenuItems[i].id);
         pitem.replace("{i}", myMenuItems[i].id);
