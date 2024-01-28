@@ -2506,7 +2506,7 @@ class ESP_WiFiManager_Lite
         if (indices[i] == -1)
           continue;     // skip duplicates and those that are below the required quality
 
-        ListOfSSIDs += String(FPSTR(ESP_WML_OPTION_START)) + String(WiFi.SSID(indices[i])) + String(FPSTR(ESP_WML_OPTION_END));
+        ListOfSSIDs += String(FPSTR(ESP_WML_OPTION_START)) + WiFi.SSID(indices[i]) + String(FPSTR(ESP_WML_OPTION_END));
         list_items++;   // Count number of suitable, distinct SSIDs to be included in list
       }
 
@@ -2518,24 +2518,24 @@ class ESP_WiFiManager_Lite
       pitem = FPSTR(ESP_WML_HTML_HEAD_END);
 
 #if MANUAL_SSID_INPUT_ALLOWED
-      pitem.replace(F("[[input_id]]"),  F("<input id='id' list='SSIDs'>")  + String(FPSTR(ESP_WML_DATALIST_START)) + F("'SSIDs'>") +
-                    ListOfSSIDs + FPSTR(ESP_WML_DATALIST_END));
+      pitem.replace(F("[[input_id]]"),  String(F("<input id='id' list='SSIDs'>")) + String(FPSTR(ESP_WML_DATALIST_START)) +
+                    String(F("'SSIDs'>")) + ListOfSSIDs + String(FPSTR(ESP_WML_DATALIST_END)));
       ESP_WML_LOGDEBUG1(F("pitem:"), pitem);
-      pitem.replace(F("[[input_id1]]"), F("<input id='id1' list='SSIDs'>") + String(FPSTR(ESP_WML_DATALIST_START)) + F("'SSIDs'>") +
-                    ListOfSSIDs + FPSTR(ESP_WML_DATALIST_END));
+      pitem.replace(F("[[input_id1]]"), String(F("<input id='id1' list='SSIDs'>")) + String(FPSTR(ESP_WML_DATALIST_START)) +
+                    String(F("'SSIDs'>")) + ListOfSSIDs + String(FPSTR(ESP_WML_DATALIST_END)));
       ESP_WML_LOGDEBUG1(F("pitem:"), pitem);
 #else
-      pitem.replace(F("[[input_id]]"),  F("<select id='id'>")  + ListOfSSIDs + String(FPSTR(ESP_WML_SELECT_END)));
-      pitem.replace(F("[[input_id1]]"), F("<select id='id1'>") + ListOfSSIDs + String(FPSTR(ESP_WML_SELECT_END)));
+      pitem.replace(F("[[input_id]]"),  String(F("<select id='id'>")) + ListOfSSIDs + String(FPSTR(ESP_WML_SELECT_END)));
+      pitem.replace(F("[[input_id1]]"), String(F("<select id='id1'>")) + ListOfSSIDs + String(FPSTR(ESP_WML_SELECT_END)));
 #endif
 
-      root_html_template += pitem + FPSTR(ESP_WML_FLDSET_START);
+      root_html_template += pitem + String(FPSTR(ESP_WML_FLDSET_START));
 
 #else
       pitem = FPSTR(ESP_WML_HTML_HEAD_END);
       pitem.replace(F("[[input_id]]"),  FPSTR(ESP_WML_HTML_INPUT_ID));
       pitem.replace(F("[[input_id1]]"), FPSTR(ESP_WML_HTML_INPUT_ID1));
-      root_html_template += pitem + FPSTR(ESP_WML_FLDSET_START);
+      root_html_template += pitem + String(FPSTR(ESP_WML_FLDSET_START));
 #endif    // SCAN_WIFI_NETWORKS
 
 #if USE_DYNAMIC_PARAMETERS
@@ -2549,7 +2549,7 @@ class ESP_WiFiManager_Lite
       }
 #endif
 
-      root_html_template += String(FPSTR(ESP_WML_FLDSET_END)) + FPSTR(ESP_WML_HTML_BUTTON) + FPSTR(ESP_WML_HTML_SCRIPT);
+      root_html_template += String(FPSTR(ESP_WML_FLDSET_END)) + String(FPSTR(ESP_WML_HTML_BUTTON)) + String(FPSTR(ESP_WML_HTML_SCRIPT));
 
 #if USE_DYNAMIC_PARAMETERS
       for (uint16_t i = 0; i < NUM_MENU_ITEMS; i++)
@@ -2560,7 +2560,7 @@ class ESP_WiFiManager_Lite
       }
 #endif
 
-      root_html_template += String(FPSTR(ESP_WML_HTML_SCRIPT_END)) + FPSTR(ESP_WML_HTML_END);
+      root_html_template += String(FPSTR(ESP_WML_HTML_SCRIPT_END)) + String(FPSTR(ESP_WML_HTML_END));
 
       return;
     }
