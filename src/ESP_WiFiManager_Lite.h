@@ -27,7 +27,8 @@
   1.11.0  H Mueller    29/08/2023  Output and string fixes, removed unused code and comments, Eeprom fixes, 
                                    optimized output in isForcedCP(), global renaming of used variables (leading ESP_WML),
                                    removed handleClient delay for ESP32, fixed WiFi connected time to num retries, 
-                                   added WIFI_CONNECT_TIMEOUT to overwrite the default WiFi connect timeout
+                                   added WIFI_CONNECT_TIMEOUT to overwrite the default WiFi connect timeout,
+                                   show WiFi credentials password at DEBUG level only
  *****************************************************************************************************************************/
 
 #pragma once
@@ -1473,8 +1474,13 @@ class ESP_WiFiManager_Lite
     void displayConfigData(const ESP_WM_LITE_Configuration& configData)
     {
       ESP_WML_LOGERROR1(F("Hdr="), configData.header);
+#if (_ESP_WM_LITE_LOGLEVEL_ > 3)
       ESP_WML_LOGERROR3(F("SSID0="), configData.WiFi_Creds[0].wifi_ssid, F(",PW0="), configData.WiFi_Creds[0].wifi_pw);
       ESP_WML_LOGERROR3(F("SSID1="), configData.WiFi_Creds[1].wifi_ssid, F(",PW1="), configData.WiFi_Creds[1].wifi_pw);
+#else
+      ESP_WML_LOGERROR1(F("SSID0="), configData.WiFi_Creds[0].wifi_ssid);
+      ESP_WML_LOGERROR1(F("SSID1="), configData.WiFi_Creds[1].wifi_ssid);
+#endif
 
 #if USING_BOARD_NAME
 

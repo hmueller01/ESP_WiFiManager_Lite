@@ -1,4 +1,4 @@
-## ESP_WiFiManager_Lite (Light Weight Credentials / WiFiManager for ESP32/ESP8266)
+## ESP_WiFiManager_Lite (Light Weight Credentials / WiFiManager for ESP32/ESP8266)  <!-- omit from toc --> 
 
 [![arduino-library-badge](https://www.ardu-badge.com/badge/ESP_WiFiManager_Lite.svg?)](https://www.ardu-badge.com/ESP_WiFiManager_Lite)
 [![GitHub release](https://img.shields.io/github/release/khoih-prog/ESP_WiFiManager_Lite.svg)](https://github.com/khoih-prog/ESP_WiFiManager_Lite/releases)
@@ -12,28 +12,29 @@
 ---
 ---
 
-## Table of Contents
+## Table of Contents  <!-- omit from toc --> 
 
-* [Changelog](#changelog)
-  * [Release v1.10.5](#release-v1105)
-  * [Release v1.10.4](#release-v1104)
-  * [Release v1.10.3](#release-v1103)
-  * [Release v1.10.2](#release-v1102)
-  * [Release v1.10.1](#release-v1101)
-  * [Release v1.10.0](#release-v1100)
-  * [Release v1.9.0](#release-v190)
-  * [Release v1.8.2](#release-v182)
-  * [Release v1.8.1](#release-v181)
-  * [Release v1.8.0](#release-v180)
-  * [Release v1.7.0](#release-v170)
-  * [Release v1.6.0](#release-v160)
-  * [Release v1.5.1](#release-v151)
-  * [Major Release v1.5.0](#major-release-v150)
-  * [Release v1.4.0](#release-v140)
-  * [Release v1.3.0](#release-v130)
-  * [Release v1.2.0](#release-v120)
-  * [Release v1.1.0](#release-v110)
-  * [Release v1.0.0](#release-v100)
+- [Changelog](#changelog)
+  - [Release v1.11.0 (WIP)](#release-v1110-wip)
+  - [Release v1.10.5](#release-v1105)
+  - [Release v1.10.4](#release-v1104)
+  - [Release v1.10.3](#release-v1103)
+  - [Release v1.10.2](#release-v1102)
+  - [Release v1.10.1](#release-v1101)
+  - [Release v1.10.0](#release-v1100)
+  - [Release v1.9.0](#release-v190)
+  - [Release v1.8.2](#release-v182)
+  - [Release v1.8.1](#release-v181)
+  - [Release v1.8.0](#release-v180)
+  - [Release v1.7.0](#release-v170)
+  - [Release v1.6.0](#release-v160)
+  - [Release v1.5.1](#release-v151)
+  - [Major Release v1.5.0](#major-release-v150)
+  - [Release v1.4.0](#release-v140)
+  - [Release v1.3.0](#release-v130)
+  - [Release v1.2.0](#release-v120)
+  - [Release v1.1.0](#release-v110)
+  - [Release v1.0.0](#release-v100)
 
 ---
 ---
@@ -50,6 +51,7 @@
 6. [removed handleClient delay for ESP32 #6](https://github.com/hmueller01/ESP_WiFiManager_Lite/pull/6)
 7. [fixed WiFi connected time to num retries #7](https://github.com/hmueller01/ESP_WiFiManager_Lite/pull/7)
 8. [added WIFI_CONNECT_TIMEOUT to overwrite the default WiFi connect timeout #8](https://github.com/hmueller01/ESP_WiFiManager_Lite/pull/8)
+9. [show WiFi credentials password at DEBUG level only #9](https://github.com/hmueller01/ESP_WiFiManager_Lite/pull/9)
 
 ### Release v1.10.5
 
