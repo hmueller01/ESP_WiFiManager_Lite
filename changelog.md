@@ -1,4 +1,4 @@
-## ESP_WiFiManager_Lite (Light Weight Credentials / WiFiManager for ESP32/ESP8266)
+## ESP_WiFiManager_Lite (Light Weight Credentials / WiFiManager for ESP32/ESP8266)  <!-- omit from toc --> 
 
 [![arduino-library-badge](https://www.ardu-badge.com/badge/ESP_WiFiManager_Lite.svg?)](https://www.ardu-badge.com/ESP_WiFiManager_Lite)
 [![GitHub release](https://img.shields.io/github/release/khoih-prog/ESP_WiFiManager_Lite.svg)](https://github.com/khoih-prog/ESP_WiFiManager_Lite/releases)
@@ -12,10 +12,8 @@
 ---
 ---
 
-## Table of Contents
+## Table of Contents  <!-- omit from toc --> 
 
-- [ESP\_WiFiManager\_Lite (Light Weight Credentials / WiFiManager for ESP32/ESP8266)](#esp_wifimanager_lite-light-weight-credentials--wifimanager-for-esp32esp8266)
-- [Table of Contents](#table-of-contents)
 - [Changelog](#changelog)
   - [Release v1.11.0 (WIP)](#release-v1110-wip)
   - [Release v1.10.5](#release-v1105)
