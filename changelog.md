@@ -51,7 +51,8 @@
 6. [removed handleClient delay for ESP32 #6](https://github.com/hmueller01/ESP_WiFiManager_Lite/pull/6)
 7. [fixed WiFi connected time to num retries #7](https://github.com/hmueller01/ESP_WiFiManager_Lite/pull/7)
 8. [added WIFI_CONNECT_TIMEOUT to overwrite the default WiFi connect timeout #8](https://github.com/hmueller01/ESP_WiFiManager_Lite/pull/8)
-9. [show WiFi credentials password at DEBUG level only #9](https://github.com/hmueller01/ESP_WiFiManager_Lite/pull/9)
+9.  [fix esp32 compiler errors #9](https://github.com/hmueller01/ESP_WiFiManager_Lite/pull/9)
+10. [show WiFi credentials password at DEBUG level only #10](https://github.com/hmueller01/ESP_WiFiManager_Lite/pull/10)
 
 ### Release v1.10.5
 
