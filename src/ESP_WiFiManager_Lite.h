@@ -61,13 +61,13 @@
 ///////////////////////////////////////////
 
 #ifndef ESP_WIFI_MANAGER_LITE_VERSION
-  #define ESP_WIFI_MANAGER_LITE_VERSION             "ESP_WiFiManager_Lite v1.10.5"
+  #define ESP_WIFI_MANAGER_LITE_VERSION             "ESP_WiFiManager_Lite v1.11.0 (WIP)"
 
   #define ESP_WIFI_MANAGER_LITE_VERSION_MAJOR       1
-  #define ESP_WIFI_MANAGER_LITE_VERSION_MINOR       10
-  #define ESP_WIFI_MANAGER_LITE_VERSION_PATCH       5
+  #define ESP_WIFI_MANAGER_LITE_VERSION_MINOR       11
+  #define ESP_WIFI_MANAGER_LITE_VERSION_PATCH       0
 
-  #define ESP_WIFI_MANAGER_LITE_VERSION_INT         1010005
+  #define ESP_WIFI_MANAGER_LITE_VERSION_INT         1011000
 #endif
 
 ///////////////////////////////////////////
