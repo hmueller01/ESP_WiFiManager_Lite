@@ -24,11 +24,12 @@
   1.10.3  K Hoang      19/01/2023  Fix compiler error if EEPROM is used
   1.10.4  K Hoang      27/01/2023  Using PROGMEM for HTML strings
   1.10.5  K Hoang      28/01/2023  Using PROGMEM for strings in examples
-  1.11.0  H Mueller    29/08/2023  Output and string fixes, removed unused code and comments, Eeprom fixes, 
+  1.11.0  H Mueller    29/08/2023  Output and string fixes, removed unused code and comments, Eeprom fixes,
                                    optimized output in isForcedCP(), global renaming of used variables (leading ESP_WML),
-                                   removed handleClient delay for ESP32, fixed WiFi connected time to num retries, 
+                                   removed handleClient delay for ESP32, fixed WiFi connected time to num retries,
                                    added WIFI_CONNECT_TIMEOUT to overwrite the default WiFi connect timeout,
                                    show WiFi credentials password at DEBUG level only
+  1.11.1  H Mueller    24/12/2024  added config to hide WiFi password
  *****************************************************************************************************************************/
 
 #pragma once
@@ -430,27 +431,32 @@ extern ESP_WM_LITE_Configuration defaultConfig;
 
 // -- HTML page fragments
 
-const char ESP_WML_HTML_HEAD_START[] PROGMEM = "<!DOCTYPE html><html><head><title>ESP_WM_LITE</title><meta name='viewport' content='width=device-width, initial-scale=1'>";
+const char ESP_WML_HTML_HEAD_START[] PROGMEM =
+  "<!DOCTYPE html><html><head><title>ESP_WM_LITE</title>"
+  "<meta name='viewport' content='width=device-width, initial-scale=1'>";
 
 const char ESP_WML_HTML_HEAD_STYLE[] PROGMEM =
-  "<style>div,input{padding:5px;font-size:1em;}input{width:95%;}body{text-align: center;}button{background-color:#16A1E7;color:#fff;line-height:2.4rem;font-size:1.2rem;width:100%;}fieldset{border-radius:0.3rem;margin:0px;}</style>";
+  "<style>div,input{padding:5px;font-size:1em;}input{width:95%;}body{text-align: center;}"
+  "button{background-color:#16A1E7;color:#fff;line-height:2.4rem;font-size:1.2rem;width:100%;}"
+  "fieldset{border-radius:0.3rem;margin:0px;}</style>";
 
-#if USING_BOARD_NAME
-  const char ESP_WML_HTML_HEAD_END[]   PROGMEM =
-  "</head><div style='text-align:left;display:inline-block;min-width:260px;'>\
-  <fieldset><div><label>*WiFi SSID</label><div>[[input_id]]</div></div>\
-  <div><label>*PWD (8+ chars)</label><input value='[[pw]]' id='pw'><div></div></div>\
-  <div><label>*WiFi SSID1</label><div>[[input_id1]]</div></div>\
-  <div><label>*PWD1 (8+ chars)</label><input value='[[pw1]]' id='pw1'><div></div></div></fieldset>\
-  <fieldset><div><label>Board Name</label><input value='[[nm]]' id='nm'><div></div></div></fieldset>";  // DO NOT CHANGE THIS STRING EVER!!!!
+#if HIDE_WIFI_PASSWORD
+  #define ESP_WML_HTML_HIDE_PW " type='password'"
 #else
-  const char ESP_WML_HTML_HEAD_END[]   PROGMEM =
-  "</head><div style='text-align:left;display:inline-block;min-width:260px;'>\
-  <fieldset><div><label>*WiFi SSID</label><div>[[input_id]]</div></div>\
-  <div><label>*PWD (8+ chars)</label><input value='[[pw]]' id='pw'><div></div></div>\
-  <div><label>*WiFi SSID1</label><div>[[input_id1]]</div></div>\
-  <div><label>*PWD1 (8+ chars)</label><input value='[[pw1]]' id='pw1'><div></div></div></fieldset>";  // DO NOT CHANGE THIS STRING EVER!!!!
+  #define ESP_WML_HTML_HIDE_PW ""
 #endif
+
+const char ESP_WML_HTML_HEAD_END[] PROGMEM =
+  "</head><div style='text-align:left;display:inline-block;min-width:260px;'><fieldset>"
+  "<div><label>*WiFi SSID</label><div>[[input_id]]</div></div>"
+  "<div><label>*PWD (8+ chars)</label><input value='[[pw]]' id='pw'" ESP_WML_HTML_HIDE_PW "><div></div></div>"
+  "<div><label>*WiFi SSID1</label><div>[[input_id1]]</div></div>"
+  "<div><label>*PWD1 (8+ chars)</label><input value='[[pw1]]' id='pw1'" ESP_WML_HTML_HIDE_PW "><div></div></div>"
+  "><div></div></div></fieldset>"
+#if USING_BOARD_NAME
+  "<fieldset><div><label>Board Name</label><input value='[[nm]]' id='nm'><div></div></div></fieldset>"
+#endif
+  ;  // DO NOT CHANGE THIS STRING EVER!!!!
 
 const char ESP_WML_HTML_INPUT_ID[]   PROGMEM = "<input value='[[id]]' id='id'>";
 const char ESP_WML_HTML_INPUT_ID1[]  PROGMEM = "<input value='[[id1]]' id='id1'>";
@@ -461,20 +467,15 @@ const char ESP_WML_HTML_PARAM[]    PROGMEM =
   "<div><label>{b}</label><input value='[[{v}]]'id='{i}'><div></div></div>";
 const char ESP_WML_HTML_BUTTON[]   PROGMEM = "<button onclick=\"sv()\">Save</button></div>";
 
+const char ESP_WML_HTML_SCRIPT[]   PROGMEM = "<script id=\"jsbin-javascript\">"
+  "function udVal(key,val){var request=new XMLHttpRequest();var url='/?key='+key+'&value='+encodeURIComponent(val);"
+  "request.open('GET',url,false);request.send(null);}"
+  "function sv(){udVal('id',document.getElementById('id').value);udVal('pw',document.getElementById('pw').value);"
+  "udVal('id1',document.getElementById('id1').value);udVal('pw1',document.getElementById('pw1').value);"
 #if USING_BOARD_NAME
-  const char ESP_WML_HTML_SCRIPT[]   PROGMEM = "<script id=\"jsbin-javascript\">\
-  function udVal(key,val){var request=new XMLHttpRequest();var url='/?key='+key+'&value='+encodeURIComponent(val);\
-  request.open('GET',url,false);request.send(null);}\
-  function sv(){udVal('id',document.getElementById('id').value);udVal('pw',document.getElementById('pw').value);\
-  udVal('id1',document.getElementById('id1').value);udVal('pw1',document.getElementById('pw1').value);\
-  udVal('nm',document.getElementById('nm').value);";
-#else
-  const char ESP_WML_HTML_SCRIPT[]   PROGMEM = "<script id=\"jsbin-javascript\">\
-  function udVal(key,val){var request=new XMLHttpRequest();var url='/?key='+key+'&value='+encodeURIComponent(val);\
-  request.open('GET',url,false);request.send(null);}\
-  function sv(){udVal('id',document.getElementById('id').value);udVal('pw',document.getElementById('pw').value);\
-  udVal('id1',document.getElementById('id1').value);udVal('pw1',document.getElementById('pw1').value);";
+  "udVal('nm',document.getElementById('nm').value);"
 #endif
+  ;
 
 const char ESP_WML_HTML_SCRIPT_ITEM[]  PROGMEM = "udVal('{d}',document.getElementById('{d}').value);";
 const char ESP_WML_HTML_SCRIPT_END[]   PROGMEM = "alert('Updated');}</script>";
@@ -2916,7 +2917,7 @@ class ESP_WiFiManager_Lite
         // CaptivePortal
         // if DNSServer is started with "*" for domain name, it will reply with provided IP to all DNS requests
         dnsServer->start(DNS_PORT, "*", portal_apIP);
-        
+
         // reply to all requests with same HTML
         server->onNotFound([this]()
         {

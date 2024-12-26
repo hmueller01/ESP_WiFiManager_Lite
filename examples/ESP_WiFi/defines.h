@@ -7,7 +7,7 @@
   configuration/reconfiguration and autoconnect/autoreconnect of WiFi and other services without Hardcoding.
 
   Built by Khoi Hoang https://github.com/khoih-prog/ESP_WiFiManager_Lite
-  Licensed under MIT license      
+  Licensed under MIT license
  *****************************************************************************************************************************/
 
 #ifndef defines_h
@@ -110,6 +110,9 @@
 // Only use whenever urgent tasks in loop() can't be delayed. But if so, it's better you have to rewrite your code, e.g. using higher priority tasks.
 //#define WIFI_RECON_INTERVAL                   30000
 
+// Default WiFi connection timeout in ms is 5000
+//#define WIFI_CONNECT_TIMEOUT 10000
+
 /////////////////////////////////////////////
 
 // Permit reset hardware if no WiFi to permit user another chance to access Config Portal.
@@ -121,18 +124,21 @@
 
 /////////////////////////////////////////////
 
-#define SCAN_WIFI_NETWORKS                  true
+#define SCAN_WIFI_NETWORKS            true
+
+// Do not show the WiFi password on Config Portal in plain text
+#define HIDE_WIFI_PASSWORD            true
 
 // To be able to manually input SSID, not from a scanned SSID lists
-#define MANUAL_SSID_INPUT_ALLOWED           true
+#define MANUAL_SSID_INPUT_ALLOWED     true
 
 // From 2-15
-  #define MAX_SSID_IN_LIST                  8
+  #define MAX_SSID_IN_LIST            8
   
 /////////////////////////////////////////////
 
 // Optional, to use Board Name in Menu
-#define USING_BOARD_NAME                    true
+#define USING_BOARD_NAME              true
 
 /////////////////////////////////////////////
 
