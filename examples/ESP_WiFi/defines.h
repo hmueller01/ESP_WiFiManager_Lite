@@ -126,15 +126,19 @@
 
 #define SCAN_WIFI_NETWORKS            true
 
-// Hide / obscure WiFi password while entering on Config Portal (so it can't be read)
-#define ESP_WML_OBSCURE_WIFI_PASSWORD false
-
 // To be able to manually input SSID, not from a scanned SSID lists
 #define MANUAL_SSID_INPUT_ALLOWED     true
 
 // From 2-15
-  #define MAX_SSID_IN_LIST            8
-  
+#define MAX_SSID_IN_LIST              8
+
+// Hide / obscure WiFi password while entering on Config Portal (so it can't be read)
+#define ESP_WML_OBSCURE_WIFI_PASSWORD false
+
+// Show passwords in HTML source (insecure, better set to false to not show at any place,
+// side effect: old passwords are lost / not shown and need to be reentered)
+#define ESP_WML_SHOW_PASSWORDS        true
+
 /////////////////////////////////////////////
 
 // Optional, to use Board Name in Menu
