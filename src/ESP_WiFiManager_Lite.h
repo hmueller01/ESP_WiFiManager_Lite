@@ -449,22 +449,22 @@ const char ESP_WML_HTML_HEAD_STYLE[] PROGMEM =
 const char ESP_WML_HTML_HEAD_END[] PROGMEM =
   "</head><div style='text-align:left;display:inline-block;min-width:260px;'><fieldset>"
   "<div><label>*WiFi SSID</label><div>[[input_id]]</div></div>"
-  "<div><label>*PWD (8+ chars)</label><input value='[[pw]]' id='pw'" ESP_WML_HTML_HIDE_PW "><div></div></div>"
+  "<div><label>*PWD (8+ chars)</label><input value='[[pw]]' id='pw'" ESP_WML_HTML_HIDE_PW " /><div></div></div>"
   "<div><label>*WiFi SSID1</label><div>[[input_id1]]</div></div>"
-  "<div><label>*PWD1 (8+ chars)</label><input value='[[pw1]]' id='pw1'" ESP_WML_HTML_HIDE_PW "><div></div></div>"
+  "<div><label>*PWD1 (8+ chars)</label><input value='[[pw1]]' id='pw1'" ESP_WML_HTML_HIDE_PW " /><div></div></div>"
   "><div></div></div></fieldset>"
 #if USING_BOARD_NAME
-  "<fieldset><div><label>Board Name</label><input value='[[nm]]' id='nm'><div></div></div></fieldset>"
+  "<fieldset><div><label>Board Name</label><input value='[[nm]]' id='nm' /><div></div></div></fieldset>"
 #endif
   ;  // DO NOT CHANGE THIS STRING EVER!!!!
 
-const char ESP_WML_HTML_INPUT_ID[]   PROGMEM = "<input value='[[id]]' id='id'>";
-const char ESP_WML_HTML_INPUT_ID1[]  PROGMEM = "<input value='[[id1]]' id='id1'>";
+const char ESP_WML_HTML_INPUT_ID[]   PROGMEM = "<input value='[[id]]' id='id' />";
+const char ESP_WML_HTML_INPUT_ID1[]  PROGMEM = "<input value='[[id1]]' id='id1' />";
 
 const char ESP_WML_FLDSET_START[]  PROGMEM = "<fieldset>";
 const char ESP_WML_FLDSET_END[]    PROGMEM = "</fieldset>";
 const char ESP_WML_HTML_PARAM[]    PROGMEM =
-  "<div><label>{b}</label><input value='[[{v}]]'id='{i}'><div></div></div>";
+  "<div><label>{b}</label><input value='[[{v}]]'id='{i}' /><div></div></div>";
 const char ESP_WML_HTML_BUTTON[]   PROGMEM = "<button onclick=\"sv()\">Save</button></div>";
 
 const char ESP_WML_HTML_SCRIPT[]   PROGMEM = "<script id=\"jsbin-javascript\">"
@@ -2525,10 +2525,10 @@ class ESP_WiFiManager_Lite
       pitem = FPSTR(ESP_WML_HTML_HEAD_END);
 
 #if MANUAL_SSID_INPUT_ALLOWED
-      pitem.replace(F("[[input_id]]"),  String(F("<input id='id' list='SSIDs'>")) + String(FPSTR(ESP_WML_DATALIST_START)) +
+      pitem.replace(F("[[input_id]]"),  String(F("<input id='id' list='SSIDs' />")) + String(FPSTR(ESP_WML_DATALIST_START)) +
                     String(F("'SSIDs'>")) + ListOfSSIDs + String(FPSTR(ESP_WML_DATALIST_END)));
       ESP_WML_LOGDEBUG1(F("pitem:"), pitem);
-      pitem.replace(F("[[input_id1]]"), String(F("<input id='id1' list='SSIDs'>")) + String(FPSTR(ESP_WML_DATALIST_START)) +
+      pitem.replace(F("[[input_id1]]"), String(F("<input id='id1' list='SSIDs' />")) + String(FPSTR(ESP_WML_DATALIST_START)) +
                     String(F("'SSIDs'>")) + ListOfSSIDs + String(FPSTR(ESP_WML_DATALIST_END)));
       ESP_WML_LOGDEBUG1(F("pitem:"), pitem);
 #else
