@@ -446,7 +446,7 @@ const char ESP_WML_HTML_HEAD_START[] PROGMEM =
 
 const char ESP_WML_HTML_HEAD_STYLE[] PROGMEM =
   "<style>div,input{padding:5px;font-size:1em;}input{width:95%;}body{text-align: center;}"
-  "button{background-color:#16A1E7;color:#fff;line-height:2.4rem;font-size:1.2rem;width:100%;}"
+  "button{background-color:#16A1E7;color:#fff;line-height:2.4rem;font-size:1.2rem;width:49%;}"
   "fieldset{border-radius:0.3rem;margin:0px;}</style>";
 
 #if ESP_WML_OBSCURE_WIFI_PASSWORD
@@ -461,7 +461,7 @@ const char ESP_WML_HTML_HEAD_END[] PROGMEM =
   "<div><label>*PWD (8+ chars)</label><input value='[[pw]]' id='pw'" ESP_WML_HTML_OBSCURE_PW " /><div></div></div>"
   "<div><label>*WiFi SSID1</label><div>[[input_id1]]</div></div>"
   "<div><label>*PWD1 (8+ chars)</label><input value='[[pw1]]' id='pw1'" ESP_WML_HTML_OBSCURE_PW " /><div></div></div>"
-  "><div></div></div></fieldset>"
+  "</fieldset>"
 #if USING_BOARD_NAME
   "<fieldset><div><label>Board Name</label><input value='[[nm]]' id='nm' /><div></div></div></fieldset>"
 #endif
@@ -474,11 +474,12 @@ const char ESP_WML_FLDSET_START[]  PROGMEM = "<fieldset>";
 const char ESP_WML_FLDSET_END[]    PROGMEM = "</fieldset>";
 const char ESP_WML_HTML_PARAM[]    PROGMEM =
   "<div><label>{b}</label><input value='[[{v}]]'id='{i}' /><div></div></div>";
-const char ESP_WML_HTML_BUTTON[]   PROGMEM = "<button onclick=\"sv()\">Save</button></div>";
+const char ESP_WML_HTML_BUTTON[]   PROGMEM = "<button onclick=\"cncl()\">Cancel</button>&nbsp;<button onclick=\"sv()\">Save</button></div>";
 
 const char ESP_WML_HTML_SCRIPT[]   PROGMEM = "<script id=\"jsbin-javascript\">"
   "function udVal(key,val){var request=new XMLHttpRequest();var url='/?key='+key+'&value='+encodeURIComponent(val);"
   "request.open('GET',url,false);request.send(null);}"
+  "function cncl(){alert('Canceled. Rebooting...');udVal('reboot','');}"
   "function sv(){udVal('id',document.getElementById('id').value);udVal('pw',document.getElementById('pw').value);"
   "udVal('id1',document.getElementById('id1').value);udVal('pw1',document.getElementById('pw1').value);"
 #if USING_BOARD_NAME
@@ -2640,10 +2641,15 @@ class ESP_WiFiManager_Lite
 
           if (hadConfigData)
           {
-            result.replace("[[id]]",     ESP_WML_config.WiFi_Creds[0].wifi_ssid);
-            result.replace("[[pw]]",     ESP_WML_config.WiFi_Creds[0].wifi_pw);
-            result.replace("[[id1]]",    ESP_WML_config.WiFi_Creds[1].wifi_ssid);
-            result.replace("[[pw1]]",    ESP_WML_config.WiFi_Creds[1].wifi_pw);
+            result.replace("[[id]]",  ESP_WML_config.WiFi_Creds[0].wifi_ssid);
+            result.replace("[[id1]]", ESP_WML_config.WiFi_Creds[1].wifi_ssid);
+#if ESP_WML_SHOW_PASSWORDS
+            result.replace("[[pw]]",  ESP_WML_config.WiFi_Creds[0].wifi_pw);
+            result.replace("[[pw1]]", ESP_WML_config.WiFi_Creds[1].wifi_pw);
+#else
+            result.replace("[[pw]]",  "");
+            result.replace("[[pw1]]", "");
+#endif
 
 #if USING_BOARD_NAME
             result.replace("[[nm]]",     ESP_WML_config.board_name);
@@ -2677,6 +2683,13 @@ class ESP_WiFiManager_Lite
           server->send(200, FPSTR(ESP_WML_HTTP_HEAD_TEXT_HTML), result);
 
           return;
+        }
+
+
+        // do not save config if key is "reboot"
+        if (key == String("reboot"))
+        {
+          resetFunc();
         }
 
         if (number_items_Updated == 0)
