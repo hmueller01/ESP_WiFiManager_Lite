@@ -85,11 +85,15 @@
     #if USE_LITTLEFS
       #define FileFS        LittleFS
       #define FS_Name       "LittleFS"
-      #warning Using LittleFS in ESP_WiFiManager_Lite.h
+      #if (_ESP_WM_LITE_LOGLEVEL_ > 3)
+        #warning Using LittleFS in ESP_WiFiManager_Lite.h
+      #endif
     #else
       #define FileFS        SPIFFS
       #define FS_Name       "SPIFFS"
-      #warning Using SPIFFS in ESP_WiFiManager_Lite.h
+      #if (_ESP_WM_LITE_LOGLEVEL_ > 3)
+        #warning Using SPIFFS in ESP_WiFiManager_Lite.h
+      #endif
     #endif
 
     #include <FS.h>
@@ -98,10 +102,12 @@
     #include <EEPROM.h>
     #define FS_Name         "EEPROM"
     #define EEPROM_SIZE     2048
-    #warning Using EEPROM in ESP_WiFiManager_Lite.h
+    #if (_ESP_WM_LITE_LOGLEVEL_ > 3)
+      #warning Using EEPROM in ESP_WiFiManager_Lite.h
+    #endif
   #endif
 
-#else   //ESP32
+#else   // ESP32
 
   #include <WiFi.h>
   #include <WiFiMulti.h>
@@ -161,12 +167,16 @@
     FS* filesystem =        &SPIFFS;
     #define FileFS          SPIFFS
     #define FS_Name         "SPIFFS"
-    #warning Using SPIFFS in ESP_WiFiManager_Lite.h
+    #if (_ESP_WM_LITE_LOGLEVEL_ > 3)
+      #warning Using SPIFFS in ESP_WiFiManager_Lite.h
+    #endif
   #else
     #include <EEPROM.h>
     #define FS_Name         "EEPROM"
     #define EEPROM_SIZE     2048
-    #warning Using EEPROM in ESP_WiFiManager_Lite.h
+    #if (_ESP_WM_LITE_LOGLEVEL_ > 3)
+      #warning Using EEPROM in ESP_WiFiManager_Lite.h
+    #endif
   #endif
 
 #endif
@@ -181,7 +191,6 @@
 #undef max
 #include <algorithm>
 
-//KH, for ESP32
 #ifdef ESP8266
 extern "C"
 {
@@ -190,7 +199,7 @@ extern "C"
 
 #define ESP_getChipId()   (ESP.getChipId())
 
-#else   //ESP32
+#else   // ESP32
 
 #include <esp_wifi.h>
 
@@ -1380,7 +1389,7 @@ class ESP_WiFiManager_Lite
 #ifdef ESP8266
     ESP8266WebServer *server = nullptr;
     ESP8266WiFiMulti wifiMulti;
-#else   //ESP32
+#else   // ESP32
     WebServer *server = nullptr;
     WiFiMulti wifiMulti;
 #endif
