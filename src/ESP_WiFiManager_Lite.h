@@ -440,18 +440,18 @@ const char ESP_WML_HTML_HEAD_STYLE[] PROGMEM =
   "button{background-color:#16A1E7;color:#fff;line-height:2.4rem;font-size:1.2rem;width:100%;}"
   "fieldset{border-radius:0.3rem;margin:0px;}</style>";
 
-#if HIDE_WIFI_PASSWORD
-  #define ESP_WML_HTML_HIDE_PW " type='password'"
+#if ESP_WML_OBSCURE_WIFI_PASSWORD
+  #define ESP_WML_HTML_OBSCURE_PW " type='password'"
 #else
-  #define ESP_WML_HTML_HIDE_PW ""
+  #define ESP_WML_HTML_OBSCURE_PW ""
 #endif
 
 const char ESP_WML_HTML_HEAD_END[] PROGMEM =
   "</head><div style='text-align:left;display:inline-block;min-width:260px;'><fieldset>"
   "<div><label>*WiFi SSID</label><div>[[input_id]]</div></div>"
-  "<div><label>*PWD (8+ chars)</label><input value='[[pw]]' id='pw'" ESP_WML_HTML_HIDE_PW " /><div></div></div>"
+  "<div><label>*PWD (8+ chars)</label><input value='[[pw]]' id='pw'" ESP_WML_HTML_OBSCURE_PW " /><div></div></div>"
   "<div><label>*WiFi SSID1</label><div>[[input_id1]]</div></div>"
-  "<div><label>*PWD1 (8+ chars)</label><input value='[[pw1]]' id='pw1'" ESP_WML_HTML_HIDE_PW " /><div></div></div>"
+  "<div><label>*PWD1 (8+ chars)</label><input value='[[pw1]]' id='pw1'" ESP_WML_HTML_OBSCURE_PW " /><div></div></div>"
   "><div></div></div></fieldset>"
 #if USING_BOARD_NAME
   "<fieldset><div><label>Board Name</label><input value='[[nm]]' id='nm' /><div></div></div></fieldset>"

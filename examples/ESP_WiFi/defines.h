@@ -126,8 +126,8 @@
 
 #define SCAN_WIFI_NETWORKS            true
 
-// Do not show the WiFi password on Config Portal in plain text
-#define HIDE_WIFI_PASSWORD            true
+// Hide / obscure WiFi password while entering on Config Portal (so it can't be read)
+#define ESP_WML_OBSCURE_WIFI_PASSWORD false
 
 // To be able to manually input SSID, not from a scanned SSID lists
 #define MANUAL_SSID_INPUT_ALLOWED     true
