@@ -15,6 +15,7 @@
 ## Table of Contents  <!-- omit from toc --> 
 
 - [Changelog](#changelog)
+  - [Release v1.11.1 (WIP)](#release-v1111-wip)
   - [Release v1.11.0 (WIP)](#release-v1110-wip)
   - [Release v1.10.5](#release-v1105)
   - [Release v1.10.4](#release-v1104)
@@ -40,6 +41,10 @@
 ---
 
 ## Changelog
+
+### Release v1.11.1 (WIP)
+
+1. [added config to hide WiFi password, hide dynamic parameter values (using * or _ at start of name)](https://github.com/hmueller01/ESP_WiFiManager_Lite/pull/11)
 
 ### Release v1.11.0 (WIP)
 

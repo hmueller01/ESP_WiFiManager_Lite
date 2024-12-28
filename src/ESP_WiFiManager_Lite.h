@@ -24,11 +24,12 @@
   1.10.3  K Hoang      19/01/2023  Fix compiler error if EEPROM is used
   1.10.4  K Hoang      27/01/2023  Using PROGMEM for HTML strings
   1.10.5  K Hoang      28/01/2023  Using PROGMEM for strings in examples
-  1.11.0  H Mueller    29/08/2023  Output and string fixes, removed unused code and comments, Eeprom fixes, 
+  1.11.0  H Mueller    29/08/2023  Output and string fixes, removed unused code and comments, Eeprom fixes,
                                    optimized output in isForcedCP(), global renaming of used variables (leading ESP_WML),
-                                   removed handleClient delay for ESP32, fixed WiFi connected time to num retries, 
+                                   removed handleClient delay for ESP32, fixed WiFi connected time to num retries,
                                    added WIFI_CONNECT_TIMEOUT to overwrite the default WiFi connect timeout,
                                    show WiFi credentials password at DEBUG level only
+  1.11.1  H Mueller    28/12/2024  added config to hide WiFi password, hide dynamic parameter values (using * or _ at start of name)
  *****************************************************************************************************************************/
 
 #pragma once
@@ -61,13 +62,13 @@
 ///////////////////////////////////////////
 
 #ifndef ESP_WIFI_MANAGER_LITE_VERSION
-  #define ESP_WIFI_MANAGER_LITE_VERSION             "ESP_WiFiManager_Lite v1.11.0 (WIP)"
+  #define ESP_WIFI_MANAGER_LITE_VERSION             "ESP_WiFiManager_Lite v1.11.1 (WIP)"
 
   #define ESP_WIFI_MANAGER_LITE_VERSION_MAJOR       1
   #define ESP_WIFI_MANAGER_LITE_VERSION_MINOR       11
-  #define ESP_WIFI_MANAGER_LITE_VERSION_PATCH       0
+  #define ESP_WIFI_MANAGER_LITE_VERSION_PATCH       1
 
-  #define ESP_WIFI_MANAGER_LITE_VERSION_INT         1011000
+  #define ESP_WIFI_MANAGER_LITE_VERSION_INT         1011001
 #endif
 
 ///////////////////////////////////////////
@@ -84,11 +85,15 @@
     #if USE_LITTLEFS
       #define FileFS        LittleFS
       #define FS_Name       "LittleFS"
-      #warning Using LittleFS in ESP_WiFiManager_Lite.h
+      #if (_ESP_WM_LITE_LOGLEVEL_ > 3)
+        #warning Using LittleFS in ESP_WiFiManager_Lite.h
+      #endif
     #else
       #define FileFS        SPIFFS
       #define FS_Name       "SPIFFS"
-      #warning Using SPIFFS in ESP_WiFiManager_Lite.h
+      #if (_ESP_WM_LITE_LOGLEVEL_ > 3)
+        #warning Using SPIFFS in ESP_WiFiManager_Lite.h
+      #endif
     #endif
 
     #include <FS.h>
@@ -97,10 +102,12 @@
     #include <EEPROM.h>
     #define FS_Name         "EEPROM"
     #define EEPROM_SIZE     2048
-    #warning Using EEPROM in ESP_WiFiManager_Lite.h
+    #if (_ESP_WM_LITE_LOGLEVEL_ > 3)
+      #warning Using EEPROM in ESP_WiFiManager_Lite.h
+    #endif
   #endif
 
-#else   //ESP32
+#else   // ESP32
 
   #include <WiFi.h>
   #include <WiFiMulti.h>
@@ -160,12 +167,16 @@
     FS* filesystem =        &SPIFFS;
     #define FileFS          SPIFFS
     #define FS_Name         "SPIFFS"
-    #warning Using SPIFFS in ESP_WiFiManager_Lite.h
+    #if (_ESP_WM_LITE_LOGLEVEL_ > 3)
+      #warning Using SPIFFS in ESP_WiFiManager_Lite.h
+    #endif
   #else
     #include <EEPROM.h>
     #define FS_Name         "EEPROM"
     #define EEPROM_SIZE     2048
-    #warning Using EEPROM in ESP_WiFiManager_Lite.h
+    #if (_ESP_WM_LITE_LOGLEVEL_ > 3)
+      #warning Using EEPROM in ESP_WiFiManager_Lite.h
+    #endif
   #endif
 
 #endif
@@ -180,7 +191,6 @@
 #undef max
 #include <algorithm>
 
-//KH, for ESP32
 #ifdef ESP8266
 extern "C"
 {
@@ -189,7 +199,7 @@ extern "C"
 
 #define ESP_getChipId()   (ESP.getChipId())
 
-#else   //ESP32
+#else   // ESP32
 
 #include <esp_wifi.h>
 
@@ -430,51 +440,54 @@ extern ESP_WM_LITE_Configuration defaultConfig;
 
 // -- HTML page fragments
 
-const char ESP_WML_HTML_HEAD_START[] PROGMEM = "<!DOCTYPE html><html><head><title>ESP_WM_LITE</title><meta name='viewport' content='width=device-width, initial-scale=1'>";
+const char ESP_WML_HTML_HEAD_START[] PROGMEM =
+  "<!DOCTYPE html><html><head><title>ESP_WM_LITE</title>"
+  "<meta name='viewport' content='width=device-width, initial-scale=1'>";
 
 const char ESP_WML_HTML_HEAD_STYLE[] PROGMEM =
-  "<style>div,input{padding:5px;font-size:1em;}input{width:95%;}body{text-align: center;}button{background-color:#16A1E7;color:#fff;line-height:2.4rem;font-size:1.2rem;width:100%;}fieldset{border-radius:0.3rem;margin:0px;}</style>";
+  "<style>div,input{padding:5px;font-size:1em;}input{width:95%;}body{text-align: center;}"
+  "button{background-color:#16A1E7;color:#fff;line-height:2.4rem;font-size:1.2rem;width:49%;}"
+  "fieldset{border-radius:0.3rem;margin:0px;}</style>";
 
-#if USING_BOARD_NAME
-  const char ESP_WML_HTML_HEAD_END[]   PROGMEM =
-  "</head><div style='text-align:left;display:inline-block;min-width:260px;'>\
-  <fieldset><div><label>*WiFi SSID</label><div>[[input_id]]</div></div>\
-  <div><label>*PWD (8+ chars)</label><input value='[[pw]]' id='pw'><div></div></div>\
-  <div><label>*WiFi SSID1</label><div>[[input_id1]]</div></div>\
-  <div><label>*PWD1 (8+ chars)</label><input value='[[pw1]]' id='pw1'><div></div></div></fieldset>\
-  <fieldset><div><label>Board Name</label><input value='[[nm]]' id='nm'><div></div></div></fieldset>";  // DO NOT CHANGE THIS STRING EVER!!!!
+#if ESP_WML_OBSCURE_WIFI_PASSWORD
+  #define ESP_WML_HTML_OBSCURE_PW " type='password'"
 #else
-  const char ESP_WML_HTML_HEAD_END[]   PROGMEM =
-  "</head><div style='text-align:left;display:inline-block;min-width:260px;'>\
-  <fieldset><div><label>*WiFi SSID</label><div>[[input_id]]</div></div>\
-  <div><label>*PWD (8+ chars)</label><input value='[[pw]]' id='pw'><div></div></div>\
-  <div><label>*WiFi SSID1</label><div>[[input_id1]]</div></div>\
-  <div><label>*PWD1 (8+ chars)</label><input value='[[pw1]]' id='pw1'><div></div></div></fieldset>";  // DO NOT CHANGE THIS STRING EVER!!!!
+  #define ESP_WML_HTML_OBSCURE_PW ""
 #endif
 
-const char ESP_WML_HTML_INPUT_ID[]   PROGMEM = "<input value='[[id]]' id='id'>";
-const char ESP_WML_HTML_INPUT_ID1[]  PROGMEM = "<input value='[[id1]]' id='id1'>";
+const char ESP_WML_HTML_HEAD_END[] PROGMEM =
+  "</head><div style='text-align:left;display:inline-block;min-width:260px;'><fieldset>"
+  "<div><label>*WiFi SSID</label><div>[[input_id]]</div></div>"
+  "<div><label>*PWD (8+ chars)</label><input value='[[pw]]' id='pw'" ESP_WML_HTML_OBSCURE_PW " /><div></div></div>"
+  "<div><label>*WiFi SSID1</label><div>[[input_id1]]</div></div>"
+  "<div><label>*PWD1 (8+ chars)</label><input value='[[pw1]]' id='pw1'" ESP_WML_HTML_OBSCURE_PW " /><div></div></div>"
+  "</fieldset>"
+#if USING_BOARD_NAME
+  "<fieldset><div><label>Board Name</label><input value='[[nm]]' id='nm' /><div></div></div></fieldset>"
+#endif
+  ;  // DO NOT CHANGE THIS STRING EVER!!!!
+
+const char ESP_WML_HTML_INPUT_ID[]   PROGMEM = "<input value='[[id]]' id='id' />";
+const char ESP_WML_HTML_INPUT_ID1[]  PROGMEM = "<input value='[[id1]]' id='id1' />";
 
 const char ESP_WML_FLDSET_START[]  PROGMEM = "<fieldset>";
 const char ESP_WML_FLDSET_END[]    PROGMEM = "</fieldset>";
 const char ESP_WML_HTML_PARAM[]    PROGMEM =
-  "<div><label>{b}</label><input value='[[{v}]]'id='{i}'><div></div></div>";
-const char ESP_WML_HTML_BUTTON[]   PROGMEM = "<button onclick=\"sv()\">Save</button></div>";
+  "<div><label>{b}</label><input value='[[{v}]]' id='{i}' /><div></div></div>";
+const char ESP_WML_HTML_PARAM_PW[] PROGMEM =
+  "<div><label>{b}</label><input value='[[{v}]]' id='{i}' type='password' /><div></div></div>";
+const char ESP_WML_HTML_BUTTON[]   PROGMEM = "<button onclick=\"cncl()\">Cancel</button>&nbsp;<button onclick=\"sv()\">Save</button></div>";
 
+const char ESP_WML_HTML_SCRIPT[]   PROGMEM = "<script id=\"jsbin-javascript\">"
+  "function udVal(key,val){var request=new XMLHttpRequest();var url='/?key='+key+'&value='+encodeURIComponent(val);"
+  "request.open('GET',url,false);request.send(null);}"
+  "function cncl(){alert('Canceled. Rebooting...');udVal('reboot','');}"
+  "function sv(){udVal('id',document.getElementById('id').value);udVal('pw',document.getElementById('pw').value);"
+  "udVal('id1',document.getElementById('id1').value);udVal('pw1',document.getElementById('pw1').value);"
 #if USING_BOARD_NAME
-  const char ESP_WML_HTML_SCRIPT[]   PROGMEM = "<script id=\"jsbin-javascript\">\
-  function udVal(key,val){var request=new XMLHttpRequest();var url='/?key='+key+'&value='+encodeURIComponent(val);\
-  request.open('GET',url,false);request.send(null);}\
-  function sv(){udVal('id',document.getElementById('id').value);udVal('pw',document.getElementById('pw').value);\
-  udVal('id1',document.getElementById('id1').value);udVal('pw1',document.getElementById('pw1').value);\
-  udVal('nm',document.getElementById('nm').value);";
-#else
-  const char ESP_WML_HTML_SCRIPT[]   PROGMEM = "<script id=\"jsbin-javascript\">\
-  function udVal(key,val){var request=new XMLHttpRequest();var url='/?key='+key+'&value='+encodeURIComponent(val);\
-  request.open('GET',url,false);request.send(null);}\
-  function sv(){udVal('id',document.getElementById('id').value);udVal('pw',document.getElementById('pw').value);\
-  udVal('id1',document.getElementById('id1').value);udVal('pw1',document.getElementById('pw1').value);";
+  "udVal('nm',document.getElementById('nm').value);"
 #endif
+  ;
 
 const char ESP_WML_HTML_SCRIPT_ITEM[]  PROGMEM = "udVal('{d}',document.getElementById('{d}').value);";
 const char ESP_WML_HTML_SCRIPT_END[]   PROGMEM = "alert('Updated');}</script>";
@@ -1379,7 +1392,7 @@ class ESP_WiFiManager_Lite
 #ifdef ESP8266
     ESP8266WebServer *server = nullptr;
     ESP8266WiFiMulti wifiMulti;
-#else   //ESP32
+#else   // ESP32
     WebServer *server = nullptr;
     WiFiMulti wifiMulti;
 #endif
@@ -2524,10 +2537,10 @@ class ESP_WiFiManager_Lite
       pitem = FPSTR(ESP_WML_HTML_HEAD_END);
 
 #if MANUAL_SSID_INPUT_ALLOWED
-      pitem.replace(F("[[input_id]]"),  String(F("<input id='id' list='SSIDs'>")) + String(FPSTR(ESP_WML_DATALIST_START)) +
+      pitem.replace(F("[[input_id]]"),  String(F("<input id='id' list='SSIDs' />")) + String(FPSTR(ESP_WML_DATALIST_START)) +
                     String(F("'SSIDs'>")) + ListOfSSIDs + String(FPSTR(ESP_WML_DATALIST_END)));
       ESP_WML_LOGDEBUG1(F("pitem:"), pitem);
-      pitem.replace(F("[[input_id1]]"), String(F("<input id='id1' list='SSIDs'>")) + String(FPSTR(ESP_WML_DATALIST_START)) +
+      pitem.replace(F("[[input_id1]]"), String(F("<input id='id1' list='SSIDs' />")) + String(FPSTR(ESP_WML_DATALIST_START)) +
                     String(F("'SSIDs'>")) + ListOfSSIDs + String(FPSTR(ESP_WML_DATALIST_END)));
       ESP_WML_LOGDEBUG1(F("pitem:"), pitem);
 #else
@@ -2547,9 +2560,23 @@ class ESP_WiFiManager_Lite
 #if USE_DYNAMIC_PARAMETERS
       for (uint16_t i = 0; i < NUM_MENU_ITEMS; i++)
       {
-        pitem = FPSTR(ESP_WML_HTML_PARAM);
+        if (myMenuItems[i].id[0] == '*')
+        {
+          pitem = FPSTR(ESP_WML_HTML_PARAM_PW);
+        }
+        else
+        {
+          pitem = FPSTR(ESP_WML_HTML_PARAM);
+        }
         pitem.replace("{b}", myMenuItems[i].displayName);
-        pitem.replace("{v}", myMenuItems[i].id);
+        if (myMenuItems[i].id[0] == '_')
+        {
+          pitem.replace("value='[[{v}]]' ", "");
+        }
+        else
+        {
+          pitem.replace("{v}", myMenuItems[i].id);
+        }
         pitem.replace("{i}", myMenuItems[i].id);
         root_html_template += pitem;
       }
@@ -2630,10 +2657,15 @@ class ESP_WiFiManager_Lite
 
           if (hadConfigData)
           {
-            result.replace("[[id]]",     ESP_WML_config.WiFi_Creds[0].wifi_ssid);
-            result.replace("[[pw]]",     ESP_WML_config.WiFi_Creds[0].wifi_pw);
-            result.replace("[[id1]]",    ESP_WML_config.WiFi_Creds[1].wifi_ssid);
-            result.replace("[[pw1]]",    ESP_WML_config.WiFi_Creds[1].wifi_pw);
+            result.replace("[[id]]",  ESP_WML_config.WiFi_Creds[0].wifi_ssid);
+            result.replace("[[id1]]", ESP_WML_config.WiFi_Creds[1].wifi_ssid);
+#if ESP_WML_SHOW_PASSWORDS
+            result.replace("[[pw]]",  ESP_WML_config.WiFi_Creds[0].wifi_pw);
+            result.replace("[[pw1]]", ESP_WML_config.WiFi_Creds[1].wifi_pw);
+#else
+            result.replace("[[pw]]",  "");
+            result.replace("[[pw1]]", "");
+#endif
 
 #if USING_BOARD_NAME
             result.replace("[[nm]]",     ESP_WML_config.board_name);
@@ -2667,6 +2699,13 @@ class ESP_WiFiManager_Lite
           server->send(200, FPSTR(ESP_WML_HTTP_HEAD_TEXT_HTML), result);
 
           return;
+        }
+
+
+        // do not save config if key is "reboot"
+        if (key == String("reboot"))
+        {
+          resetFunc();
         }
 
         if (number_items_Updated == 0)
@@ -2916,7 +2955,7 @@ class ESP_WiFiManager_Lite
         // CaptivePortal
         // if DNSServer is started with "*" for domain name, it will reply with provided IP to all DNS requests
         dnsServer->start(DNS_PORT, "*", portal_apIP);
-        
+
         // reply to all requests with same HTML
         server->onNotFound([this]()
         {

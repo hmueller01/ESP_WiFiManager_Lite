@@ -36,7 +36,10 @@
   
   // RTC Memory Address for the DoubleResetDetector to use
   #define MRD_ADDRESS                   0
-  #warning Using MULTI_RESETDETECTOR
+
+  #if (_ESP_WM_LITE_LOGLEVEL_ > 3)
+    #warning Using MULTI_RESETDETECTOR
+  #endif
 #else
   #define DOUBLERESETDETECTOR_DEBUG     true
   
@@ -46,7 +49,10 @@
   
   // RTC Memory Address for the DoubleResetDetector to use
   #define DRD_ADDRESS                   0
-  #warning Using DOUBLE_RESETDETECTOR
+
+  #if (_ESP_WM_LITE_LOGLEVEL_ > 3)
+    #warning Using DOUBLE_RESETDETECTOR
+  #endif
 #endif
 
 /////////////////////////////////////////////
@@ -118,18 +124,25 @@
 
 /////////////////////////////////////////////
 
-#define SCAN_WIFI_NETWORKS                  true
+#define SCAN_WIFI_NETWORKS            true
 
 // To be able to manually input SSID, not from a scanned SSID lists
-#define MANUAL_SSID_INPUT_ALLOWED           true
+#define MANUAL_SSID_INPUT_ALLOWED     true
 
 // From 2-15
-  #define MAX_SSID_IN_LIST                  8
-  
+#define MAX_SSID_IN_LIST              8
+
+// Hide / obscure WiFi password while entering on Config Portal (so it can't be read)
+#define ESP_WML_OBSCURE_WIFI_PASSWORD false
+
+// Show passwords in HTML source (insecure, better set to false to not show at any place,
+// side effect: old passwords are lost / not shown and need to be reentered)
+#define ESP_WML_SHOW_PASSWORDS        true
+
 /////////////////////////////////////////////
 
 // Optional, to use Board Name in Menu
-#define USING_BOARD_NAME                    true
+#define USING_BOARD_NAME              true
 
 /////////////////////////////////////////////
 
