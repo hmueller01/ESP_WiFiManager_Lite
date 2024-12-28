@@ -1,4 +1,4 @@
-## ESP_WiFiManager_Lite (Light Weight Credentials / WiFiManager for ESP32/ESP8266)
+## ESP_WiFiManager_Lite (Light Weight Credentials / WiFiManager for ESP32/ESP8266) <!-- omit from toc -->
 
 [![arduino-library-badge](https://www.ardu-badge.com/badge/ESP_WiFiManager_Lite.svg?)](https://www.ardu-badge.com/ESP_WiFiManager_Lite)
 [![GitHub release](https://img.shields.io/github/release/khoih-prog/ESP_WiFiManager_Lite.svg)](https://github.com/khoih-prog/ESP_WiFiManager_Lite/releases)
@@ -16,118 +16,100 @@ I started to fix bugs and adding new features in the develop branch here. Feel f
 
 ---
 
-## Table of Contents
+## Table of Contents <!-- omit from toc -->
 
-* [Important Change from v1.9.0](#Important-Change-from-v190)
-  * [For v1.9.0 and up](#For-v190-and-up)
-* [Why do we need this ESP_WiFiManager_Lite library](#why-do-we-need-this-esp_wifimanager_lite-library)
-  * [Features](#features)
-  * [Currently supported Boards](#currently-supported-boards)
-* [Changelog](changelog.md)
-* [Prerequisites](#prerequisites)
-* [Installation](#installation)
-  * [Use Arduino Library Manager](#use-arduino-library-manager)
-  * [Manual Install](#manual-install)
-  * [VS Code & PlatformIO](#vs-code--platformio)
-* [Note for Platform IO using ESP32 LittleFS](#note-for-platform-io-using-esp32-littlefs)
-* [HOWTO Use analogRead() with ESP32 running WiFi and/or BlueTooth (BT/BLE)](#howto-use-analogread-with-esp32-running-wifi-andor-bluetooth-btble)
-  * [1. ESP32 has 2 ADCs, named ADC1 and ADC2](#1-esp32-has-2-adcs-named-adc1-and-adc2)
-  * [2. ESP32 ADCs functions](#2-esp32-adcs-functions)
-  * [3. ESP32 WiFi uses ADC2 for WiFi functions](#3-esp32-wifi-uses-adc2-for-wifi-functions)
-* [How It Works](#how-it-works)
-* [How to use](#how-to-use)
-  * [1. Basic usage](#1-basic-usage)
-  * [2. Add custom parameters](#2-add-custom-parameters)
-  * [3. Not using custom parameters](#3-not-using-custom-parameters)
-  * [4. To open Config Portal](#4-to-open-config-portal)
-  * [5. To use different AP WiFi Channel](#5-to-use-different-ap-wifi-channel)
-  * [6. To use different static AP IP from default](#6-to-use-different-static-ap-ip-from-default)
-  * [7. To use custom DHCP HostName](#7-to-use-custom-dhcp-hostname)
-  * [8. To use custom HTML Style](#8-to-use-custom-html-style)
-  * [9. To use custom Head Elements](#9-to-use-custom-head-elements)
-  * [10. To use CORS Header](#10-to-use-cors-header)
-  * [11. To use and input only one set of WiFi SSID and PWD](#11-to-use-and-input-only-one-set-of-wifi-ssid-and-pwd)
-    * [11.1 If you need to use and input only one set of WiFi SSID/PWD](#111-if-you-need-to-use-and-input-only-one-set-of-wifi-ssidpwd)
-    * [11.2 If you need to use both sets of WiFi SSID/PWD](#112-if-you-need-to-use-both-sets-of-wifi-ssidpwd)
-  * [12. To enable auto-scan of WiFi networks for selection in Configuration Portal](#12-to-enable-auto-scan-of-wifi-networks-for-selection-in-configuration-portal)
-    * [12.1 Enable auto-scan of WiFi networks for selection in Configuration Portal](#121-enable-auto-scan-of-wifi-networks-for-selection-in-configuration-portal)
-    * [12.2 Disable manually input SSIDs](#122-disable-manually-input-ssids)
-    * [12.3 Select maximum number of SSIDs in the list](#123-select-maximum-number-of-ssids-in-the-list)
-  * [13. To avoid blocking in loop when WiFi is lost](#13-To-avoid-blocking-in-loop-when-wifi-is-lost)
-    * [13.1 Max times to try WiFi per loop](#131-max-times-to-try-wifi-per-loop)
-    * [13.2 Interval between reconnection WiFi if lost](#132-interval-between-reconnection-wifi-if-lost) 
-  * [14. Not using Board_Name on Config_Portal](#14-Not-using-Board_Name-on-Config_Portal) 
-* [Examples](#examples)
-  * [ 1. ESP_WiFi](https://github.com/khoih-prog/ESP_WiFiManager_Lite/tree/main/examples/ESP_WiFi)
-  * [ 2. ESP_WiFi_MQTT](https://github.com/khoih-prog/ESP_WiFiManager_Lite/tree/main/examples/ESP_WiFi_MQTT)
-* [So, how it works?](#so-how-it-works)
-* [Important Notes](#important-notes)
-* [How to use default Credentials and have them pre-loaded onto Config Portal](#how-to-use-default-credentials-and-have-them-pre-loaded-onto-config-portal)
-  * [1. To always load Default Credentials and override Config Portal data](#1-to-always-load-default-credentials-and-override-config-portal-data)
-  * [2. To load Default Credentials when there is no valid Credentials](#2-to-load-default-credentials-when-there-is-no-valid-credentials)
-  * [3. Example of Default Credentials](#3-example-of-default-credentials)
-* [How to add dynamic parameters from sketch](#how-to-add-dynamic-parameters-from-sketch)
-* [Important Notes for using Dynamic Parameters' ids](#important-notes-for-using-dynamic-parameters-ids)
-* [Example ESP_WiFi](#example-esp_wifi)
-  * [1. File ESP_WiFi.ino](#1-file-esp_wifiino)
-  * [2. File defines.h](#2-file-definesh)
-  * [3. File Credentials.h](#3-file-credentialsh)
-  * [4. File dynamicParams.h](#4-file-dynamicparamsh)
-* [Debug Terminal Output Samples](#debug-terminal-output-samples)
-  * [1. ESP_WiFi on ESP32_DEV](#1-esp_wifi-on-esp32_dev)
-    * [1.1 MRD/DRD => Open Config Portal](#11-mrddrd--open-config-portal)
-    * [1.2 Got valid Credentials from Config Portal then connected to WiFi](#12-got-valid-credentials-from-config-portal-then-connected-to-wifi)
-    * [1.3 Lost a WiFi and autoconnect to another WiFi AP](#13-lost-a-wifi-and-autoconnect-to-another-wifi-ap)
-  * [2. ESP_WiFi_MQTT on ESP8266_NODEMCU](#2-esp_wifi_mqtt-on-esp8266_nodemcu)
-    * [2.1 No Config Data => Open Config Portal](#21-no-config-data--open-config-portal)
-    * [2.2 Got valid Credentials from Config Portal then connected to WiFi](#22-got-valid-credentials-from-config-portal-then-connected-to-wifi)
-    * [2.3 Lost a WiFi and autoconnect to another WiFi AP](#23-lost-a-wifi-and-autoconnect-to-another-wifi-ap)
-  * [3. ESP_WiFi_MQTT on ESP32S2_DEV](#3-esp_wifi_mqtt-on-esp32s2_dev)
-    * [3.1 No Config Data => Open Config Portal](#31-no-config-data--open-config-portal)
-    * [3.2 Got valid Credentials from Config Portal then connected to WiFi](#32-got-valid-credentials-from-config-portal-then-connected-to-wifi)
-    * [3.3 Lost a WiFi and autoconnect to another WiFi AP](#33-lost-a-wifi-and-autoconnect-to-another-wifi-ap)
-  * [4. ESP_WiFi_MQTT on ESP32S2_DEV to demo MultiResetDetector](#4-esp_wifi_mqtt-on-esp32s2_dev-to-demo-multiresetdetector)
-    * [4.1 MultiResetDetected => Open Config Portal](#41-multiresetdetected--open-config-portal)
-    * [4.2 Got valid Credentials from Config Portal then connected to WiFi](#42-got-valid-credentials-from-config-portal-then-connected-to-wifi)
-  * [5. ESP_WiFi_MQTT on ESP32_DEV to demo WiFi Scan](#5-esp_wifi_mqtt-on-esp32_dev-to-demo-wifi-scan)
-    * [5.1 MRD/DRD => Open Config Portal](#51-mrddrd--open-config-portal)
-    * [5.2 Config Data Saved => Connection to Adafruit MQTT](#52-config-data-saved--connection-to-adafruit-mqtt)
-  * [6. ESP_WiFi on ESP32S3_DEV](#6-ESP_WiFi-on-ESP32S3_DEV) **New**
-  * [7. ESP_WiFi on ESP32C3_DEV using LittleFS](#7-ESP_WiFi-on-ESP32C3_DEV-using-LittleFS) **New**
-* [Debug](#debug)
-* [Troubleshooting](#troubleshooting)
-* [Issues](#issues)
-* [TO DO](#to-do)
-* [DONE](#done)
-* [Contributions and Thanks](#contributions-and-thanks)
-* [Contributing](#contributing)
-* [License](#license)
-* [Copyright](#copyright)
-
----
----
-
-### Important Change from v1.9.0
-
-#### For v1.9.0 and up
-
-ESP32 `chipID` is now correct and unique. The previous releases' 32-bit wrong `chipID` is mainly the 24-bit `Organizational Unique Identifier` (OUI) plus 8 bits from the correct chipID. That's why `ESP_getChipId()` function can return duplicated values if the boards are from the same batch.
-
-For example
-
-```
-Chip_ID_64 : 0x98F4AB085288
-chipOUI    : 0x98F4AB
-chipId     : 0x85288
-getEfuseMac: 0x885208ABF498
-```
+- [Why do we need this ESP\_WiFiManager\_Lite library](#why-do-we-need-this-esp_wifimanager_lite-library)
+  - [Features](#features)
+  - [Currently supported Boards](#currently-supported-boards)
+- [Changelog](#changelog)
+    - [Important Change from v1.9.0](#important-change-from-v190)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+  - [Use Arduino Library Manager](#use-arduino-library-manager)
+  - [Manual Install](#manual-install)
+  - [VS Code \& PlatformIO:](#vs-code--platformio)
+  - [Note for Platform IO using ESP32 LittleFS](#note-for-platform-io-using-esp32-littlefs)
+    - [Necessary only for esp32 core v1.0.6-](#necessary-only-for-esp32-core-v106-)
+  - [HOWTO Use analogRead() with ESP32 running WiFi and/or BlueTooth (BT/BLE)](#howto-use-analogread-with-esp32-running-wifi-andor-bluetooth-btble)
+    - [1.  ESP32 has 2 ADCs, named ADC1 and ADC2](#1--esp32-has-2-adcs-named-adc1-and-adc2)
+    - [2. ESP32 ADCs functions](#2-esp32-adcs-functions)
+    - [3.. ESP32 WiFi uses ADC2 for WiFi functions](#3-esp32-wifi-uses-adc2-for-wifi-functions)
+- [How It Works](#how-it-works)
+  - [How to use](#how-to-use)
+    - [1. Basic usage](#1-basic-usage)
+    - [2. Add custom parameters](#2-add-custom-parameters)
+    - [3. Not using custom parameters](#3-not-using-custom-parameters)
+    - [4. To open Config Portal](#4-to-open-config-portal)
+    - [5. To use different AP WiFi Channel](#5-to-use-different-ap-wifi-channel)
+    - [6. To use different static AP IP from default](#6-to-use-different-static-ap-ip-from-default)
+    - [7. To use custom DHCP HostName](#7-to-use-custom-dhcp-hostname)
+    - [8. To use custom HTML Style](#8-to-use-custom-html-style)
+    - [9. To use custom Head Elements](#9-to-use-custom-head-elements)
+    - [10. To use CORS Header](#10-to-use-cors-header)
+    - [11. To use and input only one set of WiFi SSID and PWD](#11-to-use-and-input-only-one-set-of-wifi-ssid-and-pwd)
+    - [11.1 If you need to use and input only one set of WiFi SSID/PWD](#111-if-you-need-to-use-and-input-only-one-set-of-wifi-ssidpwd)
+    - [11.2 If you need to use both sets of WiFi SSID/PWD](#112-if-you-need-to-use-both-sets-of-wifi-ssidpwd)
+    - [12. To enable auto-scan of WiFi networks for selection in Configuration Portal](#12-to-enable-auto-scan-of-wifi-networks-for-selection-in-configuration-portal)
+    - [12.1 Enable auto-scan of WiFi networks for selection in Configuration Portal](#121-enable-auto-scan-of-wifi-networks-for-selection-in-configuration-portal)
+    - [12.2 Disable manually input SSIDs](#122-disable-manually-input-ssids)
+    - [12.3 Select maximum number of SSIDs in the list](#123-select-maximum-number-of-ssids-in-the-list)
+    - [13. To avoid blocking in loop when WiFi is lost](#13-to-avoid-blocking-in-loop-when-wifi-is-lost)
+    - [13.1 Max times to try WiFi per loop](#131-max-times-to-try-wifi-per-loop)
+    - [13.2 Interval between reconnection WiFi if lost](#132-interval-between-reconnection-wifi-if-lost)
+    - [14. Not using Board\_Name on Config\_Portal](#14-not-using-board_name-on-config_portal)
+  - [Examples](#examples)
+- [So, how it works?](#so-how-it-works)
+  - [1. Without SCAN\_WIFI\_NETWORKS](#1-without-scan_wifi_networks)
+  - [2. With SCAN\_WIFI\_NETWORKS](#2-with-scan_wifi_networks)
+  - [Important Notes](#important-notes)
+  - [How to use default Credentials and have them pre-loaded onto Config Portal](#how-to-use-default-credentials-and-have-them-pre-loaded-onto-config-portal)
+    - [1. To always load Default Credentials and override Config Portal data](#1-to-always-load-default-credentials-and-override-config-portal-data)
+    - [2. To load Default Credentials when there is no valid Credentials.](#2-to-load-default-credentials-when-there-is-no-valid-credentials)
+    - [3. Example of Default Credentials](#3-example-of-default-credentials)
+  - [How to add dynamic parameters from sketch](#how-to-add-dynamic-parameters-from-sketch)
+  - [Important Notes for using Dynamic Parameters' ids](#important-notes-for-using-dynamic-parameters-ids)
+  - [Example ESP\_WiFi](#example-esp_wifi)
+    - [1. File ESP\_WiFi.ino](#1-file-esp_wifiino)
+    - [2. File defines.h](#2-file-definesh)
+    - [3. File Credentials.h](#3-file-credentialsh)
+    - [4. File dynamicParams.h](#4-file-dynamicparamsh)
+  - [Debug Terminal output Samples](#debug-terminal-output-samples)
+  - [1. ESP\_WiFi on ESP32\_DEV](#1-esp_wifi-on-esp32_dev)
+    - [1.1. MRD/DRD =\> Open Config Portal](#11-mrddrd--open-config-portal)
+    - [1.2. Got valid Credentials from Config Portal then connected to WiFi](#12-got-valid-credentials-from-config-portal-then-connected-to-wifi)
+    - [1.3. Lost a WiFi and autoconnect to another WiFi AP](#13-lost-a-wifi-and-autoconnect-to-another-wifi-ap)
+  - [2. ESP\_WiFi\_MQTT on ESP8266\_NODEMCU](#2-esp_wifi_mqtt-on-esp8266_nodemcu)
+    - [2.1. No Config Data =\> Open Config Portal](#21-no-config-data--open-config-portal)
+    - [2.2. Got valid Credentials from Config Portal then connected to WiFi](#22-got-valid-credentials-from-config-portal-then-connected-to-wifi)
+    - [2.3. Lost a WiFi and autoconnect to another WiFi AP](#23-lost-a-wifi-and-autoconnect-to-another-wifi-ap)
+  - [3. ESP\_WiFi\_MQTT on ESP32S2\_DEV](#3-esp_wifi_mqtt-on-esp32s2_dev)
+    - [3.1. No Config Data =\> Open Config Portal](#31-no-config-data--open-config-portal)
+    - [3.2. Got valid Credentials from Config Portal then connected to WiFi](#32-got-valid-credentials-from-config-portal-then-connected-to-wifi)
+    - [3.3. Lost a WiFi and autoconnect to another WiFi AP](#33-lost-a-wifi-and-autoconnect-to-another-wifi-ap)
+  - [4. ESP\_WiFi\_MQTT on ESP32S2\_DEV to demo MultiResetDetector](#4-esp_wifi_mqtt-on-esp32s2_dev-to-demo-multiresetdetector)
+    - [4.1. MultiResetDetected =\> Open Config Portal](#41-multiresetdetected--open-config-portal)
+    - [4.2. Got valid Credentials from Config Portal then connected to WiFi](#42-got-valid-credentials-from-config-portal-then-connected-to-wifi)
+  - [5. ESP\_WiFi\_MQTT on ESP32\_DEV to demo WiFi Scan](#5-esp_wifi_mqtt-on-esp32_dev-to-demo-wifi-scan)
+    - [5.1 MRD/DRD =\> Open Config Portal](#51-mrddrd--open-config-portal)
+  - [5.2 Config Data Saved =\> Connection to Adafruit MQTT](#52-config-data-saved--connection-to-adafruit-mqtt)
+  - [6. ESP\_WiFi on ESP32S3\_DEV](#6-esp_wifi-on-esp32s3_dev)
+  - [7. ESP\_WiFi on ESP32C3\_DEV using LittleFS](#7-esp_wifi-on-esp32c3_dev-using-littlefs)
+  - [Debug](#debug)
+  - [Troubleshooting](#troubleshooting)
+  - [Issues](#issues)
+  - [TO DO](#to-do)
+  - [DONE](#done)
+  - [Contributions and Thanks](#contributions-and-thanks)
+  - [Contributing](#contributing)
+  - [License](#license)
+  - [Copyright](#copyright)
 
 ---
 ---
 
-### Why do we need this [ESP_WiFiManager_Lite library](https://github.com/khoih-prog/ESP_WiFiManager_Lite)
+## Why do we need this [ESP_WiFiManager_Lite library](https://github.com/khoih-prog/ESP_WiFiManager_Lite)
 
-#### Features
+### Features
 
 If you have used one of the full-fledge WiFiManagers such as :
 
@@ -158,7 +140,7 @@ New recent features:
 - **Scan WiFi networks** for selection in Configuration Portal
 
 
-#### Currently supported Boards
+### Currently supported Boards
 
 This [**ESP_WiFiManager_Lite** library](https://github.com/khoih-prog/ESP_WiFiManager_Lite) currently supports these following boards:
 
@@ -168,6 +150,24 @@ This [**ESP_WiFiManager_Lite** library](https://github.com/khoih-prog/ESP_WiFiMa
  4. **ESP32-S3 (ESP32S3_DEV, ESP32_S3_BOX, UM TINYS3, UM PROS3, UM FEATHERS3, etc.) using EEPROM, SPIFFS or LittleFS**.
 
 ---
+
+## Changelog
+
+See [changelog.md](changelog.md) file.
+
+#### Important Change from v1.9.0
+
+For v1.9.0 and up ESP32 `chipID` is now correct and unique. The previous releases' 32-bit wrong `chipID` is mainly the 24-bit `Organizational Unique Identifier` (OUI) plus 8 bits from the correct chipID. That's why `ESP_getChipId()` function can return duplicated values if the boards are from the same batch.
+
+For example
+
+```
+Chip_ID_64 : 0x98F4AB085288
+chipOUI    : 0x98F4AB
+chipId     : 0x85288
+getEfuseMac: 0x885208ABF498
+```
+
 ---
 
 ## Prerequisites
@@ -328,6 +328,9 @@ ESP_WiFiManager_Lite* ESP_WiFiManager;
     char *pdata;
     uint8_t maxlen;
   } MenuItem;
+
+  The ids must be unique. An id starting with * will be obscured by type password.
+  Ids starting with _ will not use an HTML value tag and need to be reentered every time.
 **************************************/
 
 #if USE_DYNAMIC_PARAMETERS
@@ -738,6 +741,9 @@ Example of [Default dynamicParams](https://github.com/khoih-prog/ESP_WiFiManager
   char *pdata;
   uint8_t maxlen;
   } MenuItem;
+
+  The ids must be unique. An id starting with * will be obscured by type password.
+  Ids starting with _ will not use an HTML value tag and need to be reentered every time.
 **************************************/
 
 #if USE_DYNAMIC_PARAMETERS
