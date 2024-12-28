@@ -29,7 +29,7 @@
                                    removed handleClient delay for ESP32, fixed WiFi connected time to num retries,
                                    added WIFI_CONNECT_TIMEOUT to overwrite the default WiFi connect timeout,
                                    show WiFi credentials password at DEBUG level only
-  1.11.1  H Mueller    24/12/2024  added config to hide WiFi password
+  1.11.1  H Mueller    28/12/2024  added config to hide WiFi password, hide dynamic parameter values (using * or _ at start of name)
  *****************************************************************************************************************************/
 
 #pragma once
@@ -473,7 +473,9 @@ const char ESP_WML_HTML_INPUT_ID1[]  PROGMEM = "<input value='[[id1]]' id='id1' 
 const char ESP_WML_FLDSET_START[]  PROGMEM = "<fieldset>";
 const char ESP_WML_FLDSET_END[]    PROGMEM = "</fieldset>";
 const char ESP_WML_HTML_PARAM[]    PROGMEM =
-  "<div><label>{b}</label><input value='[[{v}]]'id='{i}' /><div></div></div>";
+  "<div><label>{b}</label><input value='[[{v}]]' id='{i}' /><div></div></div>";
+const char ESP_WML_HTML_PARAM_PW[] PROGMEM =
+  "<div><label>{b}</label><input value='[[{v}]]' id='{i}' type='password' /><div></div></div>";
 const char ESP_WML_HTML_BUTTON[]   PROGMEM = "<button onclick=\"cncl()\">Cancel</button>&nbsp;<button onclick=\"sv()\">Save</button></div>";
 
 const char ESP_WML_HTML_SCRIPT[]   PROGMEM = "<script id=\"jsbin-javascript\">"
@@ -2558,9 +2560,23 @@ class ESP_WiFiManager_Lite
 #if USE_DYNAMIC_PARAMETERS
       for (uint16_t i = 0; i < NUM_MENU_ITEMS; i++)
       {
-        pitem = FPSTR(ESP_WML_HTML_PARAM);
+        if (myMenuItems[i].id[0] == '*')
+        {
+          pitem = FPSTR(ESP_WML_HTML_PARAM_PW);
+        }
+        else
+        {
+          pitem = FPSTR(ESP_WML_HTML_PARAM);
+        }
         pitem.replace("{b}", myMenuItems[i].displayName);
-        pitem.replace("{v}", myMenuItems[i].id);
+        if (myMenuItems[i].id[0] == '_')
+        {
+          pitem.replace("value='[[{v}]]' ", "");
+        }
+        else
+        {
+          pitem.replace("{v}", myMenuItems[i].id);
+        }
         pitem.replace("{i}", myMenuItems[i].id);
         root_html_template += pitem;
       }

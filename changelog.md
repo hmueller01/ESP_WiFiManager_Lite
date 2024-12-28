@@ -44,7 +44,7 @@
 
 ### Release v1.11.1 (WIP)
 
-1. [added config to hide WiFi password](https://github.com/hmueller01/ESP_WiFiManager_Lite/pull/11)
+1. [added config to hide WiFi password, hide dynamic parameter values (using * or _ at start of name)](https://github.com/hmueller01/ESP_WiFiManager_Lite/pull/11)
 
 ### Release v1.11.0 (WIP)
 

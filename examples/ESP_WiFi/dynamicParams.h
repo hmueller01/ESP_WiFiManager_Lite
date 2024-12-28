@@ -31,6 +31,15 @@
   char *pdata;
   uint8_t maxlen;
   } MenuItem;
+
+  The ids must be unique. An id starting with * will be obscured by type password.
+  Ids starting with _ will not use an HTML value tag and need to be reentered every time.
+  Please be noted that the following reserved names are already used in library:
+    "id"    for WiFi SSID
+    "pw"    for WiFi PW
+    "id1"   for WiFi1 SSID
+    "pw1"   for WiFi1 PW
+    "nm"    for Board Name
 **************************************/
 
 #if USE_DYNAMIC_PARAMETERS
